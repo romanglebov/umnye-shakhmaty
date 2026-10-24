@@ -150,6 +150,16 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .ghost .shield { opacity: 0; transition: opacity .12s; }
 .ghost.guarded .shield { opacity: 1; }
 .promo { position: absolute; z-index: 5; inset: 0; background: rgba(10,15,20,.45); display: grid; place-items: center; }
+.sidepick { position: absolute; z-index: 6; inset: 0; background: rgba(10,15,20,.5); display: grid; place-items: center; padding: 12px; }
+.sp-card { background: var(--raise); border-radius: 14px; box-shadow: 0 14px 40px rgba(0,0,0,.35); padding: 18px 18px 14px; display: grid; gap: 14px; justify-items: center; max-width: 100%; }
+.sp-card h3 { margin: 0; font-family: var(--f-text); font-weight: 600; font-size: 1.3rem; }
+.sp-opts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.sp-opts button { font: inherit; font-weight: 500; display: grid; justify-items: center; gap: 6px; padding: 10px 12px 12px; min-width: 6.5em; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.sp-opts button:hover, .sp-opts button:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
+.sp-opts .pc { position: relative; display: block; width: 64px; height: 64px; }
+.sp-rnd { position: relative; display: block; width: 64px; height: 64px; }
+.sp-rnd .pc { position: absolute; width: 48px; height: 48px; }
+.sp-rnd .pc:first-child { left: 0; top: 0; } .sp-rnd .pc:last-child { right: 0; bottom: 0; left: auto; top: auto; }
 .promo .pick { display: flex; gap: 6px; padding: 8px; border-radius: 10px; background: var(--raise); box-shadow: 0 10px 30px rgba(0,0,0,.3); }
 .promo button { position: relative; width: 12cqw; height: 12cqw; border-radius: 8px; border: 1px solid var(--line); background: var(--sq-light); cursor: pointer; }
 .promo button:hover, .promo button:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
@@ -265,7 +275,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
         <span class="note-small">полоска под фигурой: насколько она подвижна</span>
       </div>
       <div class="row"><span class="lbl">Карта полей</span>
-        <div class="seg" id="heatSeg"><button type="button" data-v="sum" aria-pressed="true">Всё вместе</button><button type="button" data-v="table" aria-pressed="false">Таблица полей</button><button type="button" data-v="off" aria-pressed="false">Выкл</button></div>
+        <div class="seg" id="heatSeg"><button type="button" data-v="sum" aria-pressed="false">Всё вместе</button><button type="button" data-v="table" aria-pressed="false">Таблица полей</button><button type="button" data-v="off" aria-pressed="true">Выкл</button></div>
         <span class="note-small">у выбранной фигуры: зелёные поля лучше её нынешнего, красные хуже. «Всё вместе» учитывает подвижность, вражеские пешки и размены, «Таблица полей» — только постоянную ценность поля</span>
       </div>
       <div class="row"><span class="lbl">Под боем</span>
@@ -288,6 +298,17 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
             <g id="arrowG"></g>
           </svg>
           <div class="promo" id="promo" hidden><div class="pick" id="promoPick"></div></div>
+          <div class="sidepick" id="sidePick" hidden>
+            <div class="sp-card" role="dialog" aria-labelledby="spTitle">
+              <h3 id="spTitle">За кого играем?</h3>
+              <div class="sp-opts">
+                <button type="button" data-c="w"><span class="pc p-wk"></span>Белыми</button>
+                <button type="button" data-c="r"><span class="sp-rnd"><span class="pc p-wk"></span><span class="pc p-bk"></span></span>Случайно</button>
+                <button type="button" data-c="b"><span class="pc p-bk"></span>Чёрными</button>
+              </div>
+              <button type="button" class="btn small sp-cancel" id="spCancel">Отмена</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="strip"><span class="who" id="meWho"><i class="w"></i>Вы</span><span class="evaltxt" id="evaltxt">0.0</span></div>
@@ -2147,7 +2168,7 @@ function seeMap() {
   seeCache = { fen, map };
   return map;
 }
-let showShields = true, showSee = true, showPotential = true, heatMode = "sum";
+let showShields = true, showSee = true, showPotential = true, heatMode = "off";
 let attackView = "off", showBest = false, crack = null;
 let flipped = false, selected = null, targets = new Set(), lastMove = null, arrow = null, drag = null;
 let busy = true, gen = 0, engineReady = false;
@@ -2812,7 +2833,7 @@ function renderMoves() {
   ol.scrollTop = ol.scrollHeight;
 }
 function save() {
-  const prefs = { level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode };
+  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode };
   if (online) {
     // The Stockfish game stays as it was; only the settings follow along.
     saveOnline();
@@ -3119,6 +3140,34 @@ ${marks}
   });
 }
 
+// ---------- side picker ----------
+// Resolves "w", "b", or null when cancelled.
+function pickSide(title, cancellable = true) {
+  const box = $("#sidePick");
+  $("#spTitle").textContent = title;
+  $("#spCancel").hidden = !cancellable;
+  box.hidden = false;
+  return new Promise((resolve) => {
+    const done = (v) => { box.hidden = true; box.onclick = null; document.removeEventListener("keydown", esc); resolve(v); };
+    const esc = (e) => { if (e.key === "Escape" && cancellable) done(null); };
+    document.addEventListener("keydown", esc);
+    box.onclick = (e) => {
+      const b = e.target.closest("button");
+      if (!b) { if (e.target === box && cancellable) done(null); return; }
+      if (b.id === "spCancel") return done(null);
+      const c = b.dataset.c;
+      done(c === "r" ? (Math.random() < .5 ? "w" : "b") : c);
+    };
+    setTimeout(() => box.querySelector(".sp-opts button").focus(), 0);
+  });
+}
+async function startWithPicker() {
+  const c = await pickSide("За кого играем?");
+  if (!c) return;
+  pendingColor = c; if (paintColor) paintColor(c);
+  newGame();
+}
+
 // ---------- buttons ----------
 $("#hintBtn").addEventListener("click", async () => {
   if (online) return;
@@ -3186,7 +3235,7 @@ function undoCount() {
   return Math.min(n, len - minLen);
 }
 function undo() {
-  if (online) return;
+  if (online) return askTakeback();
   const n = undoCount();
   if (n <= 0 || !engineReady) return;
   if (busy) { engine.stop(); cache.clear(); busy = false; }
@@ -3216,7 +3265,7 @@ $("#newBtn").addEventListener("click", () => {
     return;
   }
   resetNewBtn();
-  newGame();
+  startWithPicker();
 });
 function resetNewBtn() { clearTimeout(newArmed); newArmed = null; $("#newBtn").textContent = "Новая партия"; $("#newBtn").classList.remove("warn"); }
 function newGame() {
@@ -3328,7 +3377,8 @@ function saveOnline() {
 }
 function pushPresence() {
   if (!online || !online.gameRoom) return;
-  online.gameRoom.presence({ color: online.color, moves: game.history().join(" "), uid: myId, resigned: online.over === "me" ? true : null }).catch(() => {});
+  online.gameRoom.presence({ color: online.color, moves: game.history().join(" "), uid: myId, resigned: online.over === "me" ? true : null,
+    undoReq: online.undoReq || null, undoAns: online.undoAns || null }).catch(() => {});
 }
 async function resolveNames(ids) {
   ids = ids.filter((id) => id && !(id in names));
@@ -3351,7 +3401,11 @@ function onlineStatus() {
   else if (game.turn() === mine) setStatus(game.in_check() ? "Ваш ход. Вам шах!" : "Ваш ход");
   else setStatus(oppHere() ? "Ход соперника" : "Ход соперника (он сейчас не в сети)", oppHere());
   $("#hintBtn").disabled = true;
-  $("#undoBtn").disabled = true;
+  $("#undoBtn").disabled = !online.live || !!online.over || game.game_over() || !!online.undoReq || takebackTarget() === null;
+}
+function onlineEval() {
+  if (game.game_over()) setEval(terminalEval().score);
+  else if (engineReady) analyze(game.fen());
 }
 function onlineEnded(text) {
   const c = card("endc");
@@ -3363,7 +3417,7 @@ async function onlineMove(from, to, promotion, anim) {
   if (!mv) return deselect();
   selected = null; targets = new Set(); lastMove = { from, to }; arrow = null;
   render(); if (anim) animateMove(mv); playSound(mv); crackKing(); renderMoves(); updateStrips();
-  saveOnline(); pushPresence(); refreshStatus(); renderOnline();
+  saveOnline(); pushPresence(); refreshStatus(); renderOnline(); onlineEval();
   if (game.game_over()) onlineEnded(resultText());
 }
 // Take the opponent's move list when it continues ours (validated move by move).
@@ -3379,8 +3433,57 @@ function adoptMoves(list) {
   for (let i = mine.length; i < theirs.length; i++) mv = game.move(theirs[i]);
   selected = null; targets = new Set();
   lastMove = { from: mv.from, to: mv.to };
-  render(); animateMove(mv); playSound(mv); crackKing(); renderMoves(); updateStrips(); saveOnline(); pushPresence();
+  render(); animateMove(mv); playSound(mv); crackKing(); renderMoves(); updateStrips(); saveOnline(); pushPresence(); onlineEval();
   if (game.game_over()) onlineEnded(resultText());
+}
+// Take-back: the asker names the length to cut back to; the other side cuts and answers {id, ok}.
+function takebackTarget() {
+  const len = game.history().length, mine = online.color;
+  const t = game.turn() === mine ? len - 2 : len - 1;
+  if (t < 0) return null;
+  return (t % 2 === 0 ? "w" : "b") === mine ? t : null;
+}
+function cutTo(len) {
+  while (game.history().length > len) game.undo();
+  const h = game.history({ verbose: true }), last = h[h.length - 1];
+  lastMove = last ? { from: last.from, to: last.to } : null;
+  selected = null; targets = new Set(); crack = null;
+  render(); renderMoves(); updateStrips(); saveOnline(); onlineEval();
+}
+function askTakeback() {
+  if (!online || !online.live || online.over || game.game_over() || online.undoReq) return;
+  const to = takebackTarget();
+  if (to === null) return;
+  online.undoReq = { id: Math.random().toString(36).slice(2, 10), to };
+  pushPresence(); refreshStatus(); renderOnline();
+}
+function answerTakeback(ok) {
+  const req = online && online.incoming;
+  if (!req) return;
+  online.undoAns = { id: req.id, ok };
+  online.incoming = null;
+  if (ok) { cutTo(req.to); const c = card(); c.innerHTML = `<header><span class="kind">Ход отменён</span></header>`; para(c, "meta", "Вы разрешили сопернику переходить."); }
+  pushPresence(); refreshStatus(); renderOnline();
+}
+function takebackSync(opp) {
+  const req = opp.presence.undoReq, ans = opp.presence.undoAns;
+  // Their request to me.
+  if (req && typeof req.id === "string" && Number.isInteger(req.to) && req.to >= 0) {
+    const answered = online.undoAns && online.undoAns.id === req.id;
+    if (!answered && (!online.incoming || online.incoming.id !== req.id)) { online.incoming = { id: req.id, to: req.to }; playClip("notify"); }
+  } else {
+    online.incoming = null;
+    if (online.undoAns) { online.undoAns = null; pushPresence(); }   // they saw the answer
+  }
+  // Their answer to my request.
+  if (online.undoReq && ans && ans.id === online.undoReq.id) {
+    const to = online.undoReq.to;
+    online.undoReq = null;
+    const c = card();
+    if (ans.ok === true) { cutTo(to); c.innerHTML = `<header><span class="kind">Ход отменён</span></header>`; para(c, "meta", "Соперник разрешил переходить."); }
+    else { c.innerHTML = `<header><span class="kind">Отмена не принята</span></header>`; para(c, "meta", "Соперник не разрешил отменить ход."); }
+    pushPresence();
+  }
 }
 function onGamePeers() {
   if (!online) return;
@@ -3395,7 +3498,9 @@ function onGamePeers() {
       para(c, "meta", `Вы играете ${colorRu(online.color)}. ${online.color === "w" ? "Ваш ход первый." : "Первым ходит соперник."}`);
       playClip("notify");
     }
-    adoptMoves(opp.presence.moves);
+    takebackSync(opp);
+    // While I have granted a take-back they have not applied yet, their longer list is stale.
+    if (!(online.undoAns && online.undoAns.ok && opp.presence.undoReq && opp.presence.undoReq.id === online.undoAns.id)) adoptMoves(opp.presence.moves);
     if (opp.presence.resigned === true && !online.over && !game.game_over()) {
       online.over = "opp"; saveOnline(); onlineEnded("Соперник сдался. Вы победили!"); playClip("notify");
     }
@@ -3427,7 +3532,7 @@ async function enterOnline(code, color, saved) {
   $("#newBtn").hidden = true;
   saveOnline(); pushPresence();
   online.unsub = gr.onPeers(onGamePeers, () => {});
-  render(); renderMoves(); updateStrips(); refreshStatus(); renderOnline();
+  render(); renderMoves(); updateStrips(); refreshStatus(); renderOnline(); onlineEval();
 }
 function leaveOnline() {
   if (!online) return;
@@ -3446,7 +3551,10 @@ function leaveOnline() {
   para(c, "meta", "Вернул вашу партию со Stockfish.");
   if (engineReady && !game.game_over()) { if (game.turn() !== playerColor) engineOpens(); else analyze(game.fen()); }
 }
-function invite() {
+async function invite() {
+  const side = await pickSide("Каким цветом играете вы?");
+  if (!side) return;
+  pendingColor = side; if (paintColor) paintColor(side);
   const code = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => "abcdefghijkmnpqrstuvwxyz23456789"[b % 32]).join("");
   if (room) room.presence({ invite: { code, color: pendingColor, uid: myId } }).catch(() => {});
   enterOnline(code, pendingColor, null);
@@ -3489,6 +3597,12 @@ function renderOnline() {
     const dot = document.createElement("span"); dot.className = "online-dot" + (opp ? " on" : "");
     who.append(dot, `${online.oppName || "Соперник"} ${opp ? "в сети" : "не в сети"}. Вы играете ${colorRu(online.color)}.`);
     body.append(who);
+    if (online.incoming) {
+      body.append(rowEl(textEl("Соперник просит отменить ход.", "grow"), btnEl("Разрешить", "primary", () => answerTakeback(true)), btnEl("Нет", "", () => answerTakeback(false))));
+    }
+    if (online.undoReq) {
+      body.append(rowEl(textEl("Ждём, разрешит ли соперник отменить ход…", "grow"), btnEl("Не надо", "", () => { online.undoReq = null; pushPresence(); refreshStatus(); renderOnline(); })));
+    }
     const done = online.over || game.game_over();
     const btns = rowEl();
     if (!done) btns.append(btnEl("Сдаться", "", () => {
@@ -3561,8 +3675,8 @@ function restore() {
   if (typeof s.showShields === "boolean") showShields = s.showShields;
   if (typeof s.showSee === "boolean") showSee = s.showSee;
   if (typeof s.showPotential === "boolean") showPotential = s.showPotential;
-  if (["sum", "table", "off"].includes(s.heatMode)) heatMode = s.heatMode;
-  else if (s.showHeat === false) heatMode = "off";
+  // prefs v2: the field map starts switched off, also for saves made before that default.
+  if (s.v >= 2 && ["sum", "table", "off"].includes(s.heatMode)) heatMode = s.heatMode;
   if (s.playerColor === "w" || s.playerColor === "b") playerColor = pendingColor = s.playerColor;
   flipped = typeof s.flipped === "boolean" ? s.flipped : playerColor === "b";
   if (s.pgn && game.load_pgn(s.pgn)) {
@@ -3581,6 +3695,11 @@ welcome();
 if (resumed) { const c = card(); c.innerHTML = `<header><span class="kind">Партия продолжается</span></header>`; para(c, "meta", "Я восстановил вашу последнюю партию в этом браузере. Чтобы начать заново, нажмите «Новая партия»."); }
 setEval({ cp: 0, mate: null });
 render(); renderMoves(); refreshStatus();
+if (!resumed && !(typeof linkInvite !== "undefined" && linkInvite)) {
+  let hasOnline = false;
+  try { hasOnline = !!localStorage.getItem(ONLINE_KEY); } catch (_) {}
+  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
+}
 
 engine.start().then(async (ok) => {
   if (!ok) {
@@ -3591,7 +3710,7 @@ engine.start().then(async (ok) => {
   engineReady = true; busy = false;
   updateStrips();
   if (game.game_over()) { setEval(terminalEval().score); refreshStatus(); return; }
-  if (online) return refreshStatus();
+  if (online) { onlineEval(); return refreshStatus(); }
   if (game.turn() !== playerColor) engineOpens();
   else { refreshStatus(); analyze(game.fen()); }
 });
