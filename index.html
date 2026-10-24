@@ -157,6 +157,13 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .sp-opts button { font: inherit; font-weight: 500; display: grid; justify-items: center; gap: 6px; padding: 10px 12px 12px; min-width: 6.5em; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
 .sp-opts button:hover, .sp-opts button:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
 .sp-opts .pc { position: relative; display: block; width: 64px; height: 64px; }
+.sp-opts button.on { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+.lb-seats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.lb-seat { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+.lb-seat .pc { position: relative; display: block; width: 32px; height: 32px; flex: none; }
+.lb-seat span.nm { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-note { margin: 0; font-size: .9rem; color: var(--muted, inherit); text-align: center; min-height: 1.3em; }
+.lb-start { min-width: 10em; }
 .sp-rnd { position: relative; display: block; width: 64px; height: 64px; }
 .sp-rnd .pc { position: absolute; width: 48px; height: 48px; }
 .sp-rnd .pc:first-child { left: 0; top: 0; } .sp-rnd .pc:last-child { right: 0; bottom: 0; left: auto; top: auto; }
@@ -298,6 +305,22 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
             <g id="arrowG"></g>
           </svg>
           <div class="promo" id="promo" hidden><div class="pick" id="promoPick"></div></div>
+          <div class="sidepick" id="lobby" hidden>
+            <div class="sp-card" role="dialog" aria-labelledby="lbTitle">
+              <h3 id="lbTitle">За кого играем?</h3>
+              <div class="lb-seats">
+                <div class="lb-seat"><span class="pc p-wk"></span><span class="nm" id="lbW"></span></div>
+                <div class="lb-seat"><span class="pc p-bk"></span><span class="nm" id="lbB"></span></div>
+              </div>
+              <div class="sp-opts" id="lbOpts">
+                <button type="button" data-c="w"><span class="pc p-wk"></span>Белыми</button>
+                <button type="button" data-c="r"><span class="sp-rnd"><span class="pc p-wk"></span><span class="pc p-bk"></span></span>Случайно</button>
+                <button type="button" data-c="b"><span class="pc p-bk"></span>Чёрными</button>
+              </div>
+              <p class="lb-note" id="lbNote"></p>
+              <button type="button" class="btn primary lb-start" id="lbStart">Начать</button>
+            </div>
+          </div>
           <div class="sidepick" id="sidePick" hidden>
             <div class="sp-card" role="dialog" aria-labelledby="spTitle">
               <h3 id="spTitle">За кого играем?</h3>
@@ -317,6 +340,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
         <button class="btn primary" id="hintBtn" type="button">Подсказка</button>
         <button class="btn" id="undoBtn" type="button" title="Ctrl+Z">↶ Отменить ход</button>
         <button class="btn" id="flipBtn" type="button">Развернуть доску</button>
+        <button class="btn" id="swapBtn" type="button" title="Поменяться цветами с соперником">⇄ Поменяться</button>
         <button class="btn" id="newBtn" type="button">Новая партия</button>
       </div>
     </section>
@@ -2694,7 +2718,7 @@ function sqFromPoint(x, y) {
   const col = Math.floor((x - r.left) / (r.width / 8)), row = Math.floor((y - r.top) / (r.height / 8));
   return squareAt(Math.min(7, row), Math.min(7, col));
 }
-const canInteract = () => (online ? online.live && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
+const canInteract = () => (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
 function select(sq) { selected = sq; targets = new Set(game.moves({ square: sq, verbose: true }).map((m) => m.to)); render(); }
 function deselect() { selected = null; targets = new Set(); render(); }
 function attempt(from, to, dragged) {
@@ -2803,6 +2827,7 @@ function refreshStatus() {
   else if (game.turn() === playerColor) setStatus(game.in_check() ? "Ваш ход. Вам шах!" : "Ваш ход");
   else setStatus("Ход соперника");
   $("#hintBtn").disabled = !canInteract();
+  $("#swapBtn").disabled = !engineReady || game.game_over();
   $("#undoBtn").disabled = !engineReady || undoCount() <= 0;
   maybeShowBest();
 }
@@ -3142,6 +3167,7 @@ ${marks}
 
 // ---------- side picker ----------
 // Resolves "w", "b", or null when cancelled.
+let sidePickCancel = null;
 function pickSide(title, cancellable = true) {
   const box = $("#sidePick");
   $("#spTitle").textContent = title;
@@ -3149,6 +3175,7 @@ function pickSide(title, cancellable = true) {
   box.hidden = false;
   return new Promise((resolve) => {
     const done = (v) => { box.hidden = true; box.onclick = null; document.removeEventListener("keydown", esc); resolve(v); };
+    sidePickCancel = () => done(null);
     const esc = (e) => { if (e.key === "Escape" && cancellable) done(null); };
     document.addEventListener("keydown", esc);
     box.onclick = (e) => {
@@ -3255,6 +3282,7 @@ document.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
 });
 $("#flipBtn").addEventListener("click", () => { flipped = !flipped; render(); save(); });
+$("#swapBtn").addEventListener("click", swapClick);
 let newArmed = null;
 $("#newBtn").addEventListener("click", () => {
   const started = game.history().length > (playerColor === "b" ? 1 : 0) && !game.game_over();
@@ -3369,16 +3397,19 @@ const names = {};
 const other = (c) => (c === "w" ? "b" : "w");
 function oppPeerObj() {
   if (!online || !online.gameRoom) return null;
-  return online.gameRoom.peers().find((p) => !p.isMe && p.presence && p.presence.color === other(online.color)) || null;
+  // Seats are fixed for the game (they name the peer ids); the colours played can be swapped.
+  return online.gameRoom.peers().find((p) => !p.isMe && p.presence && (p.presence.seat ? p.presence.seat === other(online.seat) : p.presence.color === other(online.color))) || null;
 }
 const oppHere = () => !!oppPeerObj();
 function saveOnline() {
-  try { localStorage.setItem(ONLINE_KEY, JSON.stringify({ code: online.code, color: online.color, moves: game.history(), over: online.over || null, flipped })); } catch (_) {}
+  try { localStorage.setItem(ONLINE_KEY, JSON.stringify({ code: online.code, color: online.seat, play: online.color, sideReady: !!online.sideReady, gameNo: online.gameNo || 0, moves: game.history(), over: online.over || null, flipped })); } catch (_) {}
 }
 function pushPresence() {
   if (!online || !online.gameRoom) return;
-  online.gameRoom.presence({ color: online.color, moves: game.history().join(" "), uid: myId, resigned: online.over === "me" ? true : null,
-    undoReq: online.undoReq || null, undoAns: online.undoAns || null }).catch(() => {});
+  online.gameRoom.presence({ seat: online.seat, color: online.color, swapReq: online.swapReq || null, swapAns: online.swapAns || null, moves: game.history().join(" "), uid: myId, resigned: online.over === "me" ? true : null,
+    undoReq: online.undoReq || null, undoAns: online.undoAns || null,
+    gameNo: online.gameNo || 0, restartReq: online.restartReq || null, restartAns: online.restartAns || null,
+    want: online.want || null, ready: online.ready ? online.want : null, started: online.sideReady ? online.color : null }).catch(() => {});
 }
 async function resolveNames(ids) {
   ids = ids.filter((id) => id && !(id in names));
@@ -3398,10 +3429,12 @@ function onlineStatus() {
   else if (online.over === "me") { setStatus("Вы сдались."); $("#status").classList.add("end"); }
   else if (online.over === "opp") { setStatus("Соперник сдался. Вы победили!"); $("#status").classList.add("end"); }
   else if (!online.live) setStatus("Ждём соперника", true);
+  else if (!online.sideReady) setStatus("Выбираем стороны", true);
   else if (game.turn() === mine) setStatus(game.in_check() ? "Ваш ход. Вам шах!" : "Ваш ход");
   else setStatus(oppHere() ? "Ход соперника" : "Ход соперника (он сейчас не в сети)", oppHere());
   $("#hintBtn").disabled = true;
-  $("#undoBtn").disabled = !online.live || !!online.over || game.game_over() || !!online.undoReq || takebackTarget() === null;
+  $("#swapBtn").disabled = !online.live || !online.sideReady || !!online.over || game.game_over() || !!online.swapReq;
+  $("#undoBtn").disabled = !online.live || !online.sideReady || !!online.over || game.game_over() || !!online.undoReq || takebackTarget() === null;
 }
 function onlineEval() {
   if (game.game_over()) setEval(terminalEval().score);
@@ -3485,6 +3518,166 @@ function takebackSync(opp) {
     pushPresence();
   }
 }
+// Swapping colours: in a Stockfish game at once, online when the other side agrees.
+function swapColors() {
+  playerColor = other(playerColor);
+  flipped = !flipped; arrow = null; selected = null; targets = new Set();
+  if (online) online.color = playerColor;
+  else { pendingColor = playerColor; if (paintColor) paintColor(playerColor); }
+  render(); updateStrips();
+  const c = card(); c.innerHTML = `<header><span class="kind">Поменялись цветами</span></header>`;
+  para(c, "meta", `Теперь вы играете ${colorRu(playerColor)}.`);
+}
+function swapClick() {
+  if (online) {
+    if (!online.live || online.over || game.game_over() || online.swapReq) return;
+    online.swapReq = { id: Math.random().toString(36).slice(2, 10) };
+    pushPresence(); refreshStatus(); renderOnline();
+    return;
+  }
+  if (busy) { engine.stop(); busy = false; }
+  gen++;
+  swapColors(); save();
+  if (!engineReady || game.game_over()) return refreshStatus();
+  if (game.turn() !== playerColor) engineOpens(); else { refreshStatus(); analyze(game.fen()); }
+}
+function answerSwap(ok) {
+  const req = online && online.swapIn;
+  if (!req) return;
+  online.swapAns = { id: req.id, ok };
+  online.swapIn = null;
+  if (ok) { swapColors(); saveOnline(); }
+  pushPresence(); refreshStatus(); renderOnline();
+}
+function swapSync(opp) {
+  const req = opp.presence.swapReq, ans = opp.presence.swapAns;
+  if (req && typeof req.id === "string") {
+    const answered = online.swapAns && online.swapAns.id === req.id;
+    if (!answered && (!online.swapIn || online.swapIn.id !== req.id)) { online.swapIn = { id: req.id }; playClip("notify"); }
+  } else {
+    online.swapIn = null;
+    if (online.swapAns) { online.swapAns = null; pushPresence(); }
+  }
+  if (online.swapReq && ans && ans.id === online.swapReq.id) {
+    online.swapReq = null;
+    if (ans.ok === true) { swapColors(); saveOnline(); }
+    else { const c = card(); c.innerHTML = `<header><span class="kind">Не поменялись</span></header>`; para(c, "meta", "Соперник не захотел меняться цветами."); }
+    pushPresence();
+  }
+}
+// Side choice in the lobby: each side says what it wants (w, b or r = random), then presses «Начать».
+// Both compute the same split from the two wishes; a coin from the game code settles random vs random.
+function resolveSides(mine, theirs) {
+  if (!mine || !theirs) return null;
+  if (mine !== "r" && theirs !== "r") return mine === theirs ? { conflict: true } : { play: mine };
+  if (mine !== "r") return { play: mine };
+  if (theirs !== "r") return { play: other(theirs) };
+  const coin = [...online.code].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 2 ? "w" : "b";
+  return { play: online.seat === "w" ? coin : other(coin) };
+}
+function beginGame(play) {
+  if (play !== online.color) { playerColor = online.color = play; flipped = play === "b"; arrow = null; selected = null; targets = new Set(); render(); updateStrips(); }
+  online.sideReady = true; online.ready = false;
+  saveOnline(); pushPresence();
+  const c = card(); c.innerHTML = `<header><span class="kind">Партия началась</span></header>`;
+  para(c, "meta", `Вы играете ${colorRu(play)}. ${play === "w" ? "Ваш ход первый." : "Первым ходит соперник."}`);
+  playClip("notify");
+}
+function lobbySync(opp) {
+  if (online.sideReady) return;
+  if (game.history().length) { online.sideReady = true; saveOnline(); pushPresence(); return; }
+  const op = opp ? opp.presence : null;
+  if (op && (op.started === "w" || op.started === "b")) return beginGame(other(op.started));
+  const theirs = op && ["w", "b", "r"].includes(op.want) ? op.want : null;
+  const res = resolveSides(online.want, theirs);
+  if (online.ready && op && op.ready && op.ready === theirs && res && res.play) beginGame(res.play);
+}
+function renderLobby() {
+  const box = $("#lobby");
+  if (!online || online.sideReady || online.over || game.history().length) { box.hidden = true; return; }
+  box.hidden = false;
+  const opp = oppPeerObj(), op = opp ? opp.presence : null;
+  const theirs = op && ["w", "b", "r"].includes(op.want) ? op.want : null;
+  const oppName = online.oppName || "Соперник";
+  const res = resolveSides(online.want, theirs);
+  const seatText = (c) => {
+    const both = online.want === "r" && theirs === "r";
+    if (res && res.play && !both) return c === res.play ? "Вы" + (online.want === "r" ? " (случайно)" : "") : oppName + (theirs === "r" ? " (случайно)" : "");
+    const who = [];
+    if (online.want === c || online.want === "r") who.push(online.want === "r" ? "Вы?" : "Вы");
+    if (theirs === c || theirs === "r") who.push(theirs === "r" ? oppName + "?" : oppName);
+    return who.length ? who.join(" или ") : "свободно";
+  };
+  $("#lbW").textContent = seatText("w"); $("#lbB").textContent = seatText("b");
+  for (const b of $("#lbOpts").querySelectorAll("button")) b.classList.toggle("on", b.dataset.c === online.want);
+  const oppReady = !!(op && op.ready && op.ready === theirs);
+  let note;
+  if (!online.live || !opp) note = "Ждём соперника… Сторону можно выбрать уже сейчас.";
+  else if (res && res.conflict) note = `Вы оба выбрали ${online.want === "w" ? "белых" : "чёрных"}. Кому-то надо уступить.`;
+  else if (!online.want) note = theirs ? `${oppName} хочет играть ${theirs === "r" ? "как выпадет" : colorRu(theirs)}.` : "Выберите сторону.";
+  else if (!theirs) note = `${oppName} выбирает сторону…`;
+  else if (online.ready) note = `Ждём, когда ${oppName} нажмёт «Начать»…`;
+  else if (online.want === "r" && theirs === "r") note = "Оба выбрали «Случайно». Цвет выпадет после «Начать».";
+  else note = `Вы играете ${colorRu(res.play)}.` + (oppReady ? ` ${oppName} уже готов.` : "");
+  $("#lbNote").textContent = note;
+  const st = $("#lbStart");
+  st.disabled = !online.live || !opp || !res || !!res.conflict || online.ready;
+  st.textContent = online.ready ? "Готов, ждём…" : "Начать";
+}
+$("#lobby").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b || !online || online.sideReady) return;
+  if (b.id === "lbStart") {
+    if (b.disabled) return;
+    online.ready = true; pushPresence();
+    lobbySync(oppPeerObj());
+  } else if (b.dataset.c) {
+    online.want = b.dataset.c; online.ready = false; pushPresence();
+  }
+  refreshStatus(); renderOnline();
+});
+// Starting over: one side asks, the other agrees; both clear the board and go back to the lobby.
+// The game number keeps the previous game's moves and flags from leaking into the new one.
+const sameGame = (op) => (Number.isInteger(op.gameNo) ? op.gameNo : 0) === (online.gameNo || 0);
+function restartLocal(no) {
+  online.gameNo = no;
+  online.over = null; online.sideReady = false; online.want = null; online.ready = false;
+  online.undoReq = online.undoAns = online.incoming = null; online.swapReq = online.swapAns = online.swapIn = null;
+  game.reset(); verdicts = {}; arrow = null; selected = null; targets = new Set(); lastMove = null; crack = null;
+  render(); renderMoves(); updateStrips(); saveOnline(); onlineEval();
+  const c = card(); c.innerHTML = `<header><span class="kind">Начинаем заново</span></header>`;
+  para(c, "meta", "Выберите сторону на доске.");
+}
+function restartClick() {
+  if (!online || !online.live || online.restartReq) return;
+  online.restartReq = { id: Math.random().toString(36).slice(2, 10) };
+  pushPresence(); refreshStatus(); renderOnline();
+}
+function answerRestart(ok) {
+  const req = online && online.restartIn;
+  if (!req) return;
+  online.restartIn = null;
+  const no = (online.gameNo || 0) + 1;
+  online.restartAns = { id: req.id, ok, no };
+  if (ok) restartLocal(no);
+  pushPresence(); refreshStatus(); renderOnline();
+}
+function restartSync(opp) {
+  const req = opp.presence.restartReq, ans = opp.presence.restartAns;
+  if (req && typeof req.id === "string") {
+    const answered = online.restartAns && online.restartAns.id === req.id;
+    if (!answered && (!online.restartIn || online.restartIn.id !== req.id)) { online.restartIn = { id: req.id }; playClip("notify"); }
+  } else {
+    online.restartIn = null;
+    if (online.restartAns) { online.restartAns = null; pushPresence(); }
+  }
+  if (online.restartReq && ans && ans.id === online.restartReq.id) {
+    online.restartReq = null;
+    if (ans.ok === true && Number.isInteger(ans.no)) restartLocal(ans.no);
+    else { const c = card(); c.innerHTML = `<header><span class="kind">Продолжаем</span></header>`; para(c, "meta", "Соперник не захотел начинать заново."); }
+    pushPresence();
+  }
+}
 function onGamePeers() {
   if (!online) return;
   const opp = oppPeerObj();
@@ -3494,11 +3687,17 @@ function onGamePeers() {
     if (!online.live) {
       online.live = true;
       if (room) room.presence({ invite: null }).catch(() => {});
-      const c = card(); c.innerHTML = `<header><span class="kind">Партия по сети началась</span></header>`;
-      para(c, "meta", `Вы играете ${colorRu(online.color)}. ${online.color === "w" ? "Ваш ход первый." : "Первым ходит соперник."}`);
+      if (online.sideReady || game.history().length) {
+        const c = card(); c.innerHTML = `<header><span class="kind">Соперник на месте</span></header>`;
+        para(c, "meta", `Партия продолжается, вы играете ${colorRu(online.color)}.`);
+      }
       playClip("notify");
     }
+    restartSync(opp);
+    if (!sameGame(opp.presence)) { updateStrips(); refreshStatus(); renderOnline(); return; }
+    lobbySync(opp);
     takebackSync(opp);
+    swapSync(opp);
     // While I have granted a take-back they have not applied yet, their longer list is stale.
     if (!(online.undoAns && online.undoAns.ok && opp.presence.undoReq && opp.presence.undoReq.id === online.undoAns.id)) adoptMoves(opp.presence.moves);
     if (opp.presence.resigned === true && !online.over && !game.game_over()) {
@@ -3520,13 +3719,15 @@ async function enterOnline(code, color, saved) {
   }
   connecting = false;
   gen++; engine.stop(); busy = false;
-  online = { code, color, live: false, over: saved && saved.over || null, gameRoom: gr, oppId: null, oppName: "" };
+  if (sidePickCancel && !$("#sidePick").hidden) sidePickCancel();
+  const play = saved && ["w", "b"].includes(saved.play) ? saved.play : color;
+  online = { code, seat: color, color: play, live: false, over: saved && saved.over || null, gameRoom: gr, oppId: null, oppName: "", gameNo: saved && Number.isInteger(saved.gameNo) ? saved.gameNo : 0, want: null, ready: false, sideReady: !!(saved && (saved.sideReady || (saved.moves && saved.moves.length))) };
   game.reset();
   for (const san of (saved && saved.moves) || []) if (!game.move(san)) break;
   verdicts = {}; arrow = null; selected = null; targets = new Set();
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
-  playerColor = color; flipped = saved && typeof saved.flipped === "boolean" ? saved.flipped : color === "b";
+  playerColor = play; flipped = saved && typeof saved.flipped === "boolean" ? saved.flipped : play === "b";
   crack = game.in_checkmate() ? { fen: game.fen(), svg: crackSVG(), fresh: false } : null;
   setEval({ cp: 0, mate: null });
   $("#newBtn").hidden = true;
@@ -3552,19 +3753,17 @@ function leaveOnline() {
   if (engineReady && !game.game_over()) { if (game.turn() !== playerColor) engineOpens(); else analyze(game.fen()); }
 }
 async function invite() {
-  const side = await pickSide("Каким цветом играете вы?");
-  if (!side) return;
-  pendingColor = side; if (paintColor) paintColor(side);
   const code = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => "abcdefghijkmnpqrstuvwxyz23456789"[b % 32]).join("");
-  if (room) room.presence({ invite: { code, color: pendingColor, uid: myId } }).catch(() => {});
-  enterOnline(code, pendingColor, null);
+  if (room) room.presence({ invite: { code, color: "w", uid: myId } }).catch(() => {});
+  enterOnline(code, "w", null);
 }
 function btnEl(text, cls, onClick) {
   const b = document.createElement("button"); b.type = "button"; b.className = "btn small" + (cls ? " " + cls : ""); b.textContent = text; b.addEventListener("click", onClick); return b;
 }
 function rowEl(...kids) { const d = document.createElement("div"); d.className = "online-row"; kids.forEach((k) => d.append(k)); return d; }
 function textEl(text, cls) { const p = document.createElement("p"); p.className = cls || ""; p.textContent = text; return p; }
-function renderOnline() {
+function renderOnline() { renderOnlinePanel(); renderLobby(); }
+function renderOnlinePanel() {
   const body = $("#onlineBody");
   body.innerHTML = "";
   if (roomState === "wait" || connecting) { body.append(textEl("Подключаюсь…", "note-small")); return; }
@@ -3576,7 +3775,7 @@ function renderOnline() {
   if (online) {
     const opp = oppPeerObj();
     if (!online.live && SITE) {
-      body.append(textEl(`Отправьте сопернику эту ссылку. Вы играете ${colorRu(online.color)}, партия начнётся, когда он её откроет и нажмёт «Принять».`));
+      body.append(textEl("Отправьте сопернику эту ссылку. Когда он её откроет и нажмёт «Принять», вы окажетесь в лобби и выберете стороны."));
       const link = document.createElement("input"); link.className = "link"; link.readOnly = true; link.value = inviteLink(online.code, other(online.color));
       link.addEventListener("focus", () => link.select());
       const copy = btnEl("Скопировать", "primary", async () => {
@@ -3589,48 +3788,61 @@ function renderOnline() {
       return;
     }
     if (!online.live) {
-      body.append(textEl(`Вы пригласили сыграть, вы играете ${colorRu(online.color)}. Ждём, пока соперник откроет эту страницу и нажмёт «Принять».`));
+      body.append(textEl(game.history().length ? `Партия продолжается, вы играете ${colorRu(online.color)}. Ждём, пока соперник снова откроет страницу.` : "Вы пригласили сыграть. Ждём, пока соперник откроет эту страницу и нажмёт «Принять», потом выберете стороны."));
       body.append(rowEl(btnEl("Отменить приглашение", "", leaveOnline)));
       return;
     }
     const who = document.createElement("p");
     const dot = document.createElement("span"); dot.className = "online-dot" + (opp ? " on" : "");
-    who.append(dot, `${online.oppName || "Соперник"} ${opp ? "в сети" : "не в сети"}. Вы играете ${colorRu(online.color)}.`);
+    who.append(dot, `${online.oppName || "Соперник"} ${opp ? "в сети" : "не в сети"}.` + (online.sideReady ? ` Вы играете ${colorRu(online.color)}.` : " Выбираете стороны."));
     body.append(who);
     if (online.incoming) {
       body.append(rowEl(textEl("Соперник просит отменить ход.", "grow"), btnEl("Разрешить", "primary", () => answerTakeback(true)), btnEl("Нет", "", () => answerTakeback(false))));
+    }
+    if (online.swapIn) {
+      body.append(rowEl(textEl("Соперник предлагает поменяться цветами.", "grow"), btnEl("Поменяться", "primary", () => answerSwap(true)), btnEl("Нет", "", () => answerSwap(false))));
+    }
+    if (online.swapReq) {
+      body.append(rowEl(textEl("Ждём, согласится ли соперник поменяться цветами…", "grow"), btnEl("Не надо", "", () => { online.swapReq = null; pushPresence(); refreshStatus(); renderOnline(); })));
+    }
+    if (online.restartIn) {
+      body.append(rowEl(textEl("Соперник предлагает начать заново.", "grow"), btnEl("Начать заново", "primary", () => answerRestart(true)), btnEl("Нет", "", () => answerRestart(false))));
+    }
+    if (online.restartReq) {
+      body.append(rowEl(textEl("Ждём, согласится ли соперник начать заново…", "grow"), btnEl("Не надо", "", () => { online.restartReq = null; pushPresence(); refreshStatus(); renderOnline(); })));
     }
     if (online.undoReq) {
       body.append(rowEl(textEl("Ждём, разрешит ли соперник отменить ход…", "grow"), btnEl("Не надо", "", () => { online.undoReq = null; pushPresence(); refreshStatus(); renderOnline(); })));
     }
     const done = online.over || game.game_over();
     const btns = rowEl();
-    if (!done) btns.append(btnEl("Сдаться", "", () => {
+    if (!done && online.sideReady) btns.append(btnEl("Сдаться", "", () => {
       if (!confirmResign.armed) { confirmResign.armed = true; renderOnline(); setTimeout(() => { confirmResign.armed = false; renderOnline(); }, 3500); return; }
       confirmResign.armed = false; online.over = "me"; saveOnline(); pushPresence(); onlineEnded("Вы сдались."); refreshStatus(); renderOnline();
     }));
-    if (!done && confirmResign.armed) btns.lastChild.textContent = "Точно сдаться?";
+    if (!done && online.sideReady && confirmResign.armed) btns.lastChild.textContent = "Точно сдаться?";
+    if (online.sideReady || game.history().length) { const r = btnEl("Заново", "", restartClick); r.disabled = !opp || !!online.restartReq || !!online.restartIn; btns.append(r); }
     btns.append(btnEl(done ? "Выйти к Stockfish" : "Выйти (партия сохранится)", "", leaveOnline));
     body.append(btns);
     return;
   }
   if (SITE) {
     if (linkInvite) {
-      body.append(rowEl(textEl(`Вас пригласили сыграть. Вы будете играть ${colorRu(linkInvite.color)}.`, "grow"),
+      body.append(rowEl(textEl("Вас пригласили сыграть. Сторону выберете вместе с соперником.", "grow"),
         btnEl("Принять", "primary", () => { const li = linkInvite; history.replaceState(null, "", location.pathname); enterOnline(li.code, li.color, null); })));
     } else body.append(textEl("Нажмите «Пригласить» и отправьте ссылку другу: партия пойдёт прямо между вашими браузерами.", "note-small"));
-    body.append(rowEl(btnEl(`Пригласить (я ${pendingColor === "w" ? "белыми" : "чёрными"})`, linkInvite ? "" : "primary", invite)));
+    body.append(rowEl(btnEl("Пригласить", linkInvite ? "" : "primary", invite)));
     return;
   }
   const invites = room.peers().filter((p) => !p.isMe && p.presence && p.presence.invite && CODE_RE.test(String(p.presence.invite.code)) && ["w", "b"].includes(p.presence.invite.color));
   resolveNames(invites.map(peerId));
   for (const p of invites) {
     const inv = p.presence.invite;
-    body.append(rowEl(textEl(`${nameOf(p)} зовёт сыграть. Вы будете играть ${colorRu(other(inv.color))}.`, "grow"),
+    body.append(rowEl(textEl(`${nameOf(p)} зовёт сыграть.`, "grow"),
       btnEl("Принять", "primary", () => enterOnline(inv.code, other(inv.color), null))));
   }
   if (!invites.length) body.append(textEl("Позовите соперника: нажмите «Пригласить», а он пусть откроет эту же страницу и примет приглашение.", "note-small"));
-  body.append(rowEl(btnEl(`Пригласить (я ${pendingColor === "w" ? "белыми" : "чёрными"})`, invites.length ? "" : "primary", invite)));
+  body.append(rowEl(btnEl("Пригласить", invites.length ? "" : "primary", invite)));
 }
 const confirmResign = { armed: false };
 (async () => {
