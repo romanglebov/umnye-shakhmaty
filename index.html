@@ -244,6 +244,25 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .moves .n { color: var(--muted); }
 .moves .m { display: flex; align-items: center; gap: 6px; }
 .moves .m i { width: 7px; height: 7px; border-radius: 50%; background: var(--vc); display: inline-block; }
+.review .rv-import { display: grid; gap: 10px; }
+.review textarea { font: .86rem/1.5 var(--f-mono); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--raise); color: var(--ink); resize: vertical; min-height: 96px; width: 100%; }
+.review textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.review code { font-family: var(--f-mono); font-size: .92em; }
+.review .rv-err { margin: 0; color: var(--v-mist); font-size: .88rem; }
+.review .rv-view { display: grid; gap: 10px; }
+.review .rv-progress { margin: 0; font-size: .86rem; color: var(--muted); }
+.review .rv-progress:empty { display: none; }
+.review .rv-stats { display: grid; gap: 6px; }
+.review .rv-stats:empty { display: none; }
+.review .rv-side { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .86rem; }
+.review .rv-side > span:first-child { min-width: 5.2em; color: var(--muted); }
+.review .say { font-family: var(--f-text); font-size: .98rem; line-height: 1.55; margin: 0; white-space: pre-line; }
+.review .say.wait { color: var(--muted); font-style: italic; }
+.review .say.err { color: var(--v-mist); font-family: var(--f-ui); font-size: .88rem; }
+.btn.nav { min-width: 46px; justify-content: center; }
+.moves.rv .m { cursor: pointer; border-radius: 5px; padding: 1px 4px; margin: 0 -4px; }
+.moves.rv .m:hover { background: var(--accent-soft); }
+.moves.rv .m.cur { background: var(--accent); color: var(--on-accent); }
 .moves .empty { grid-column: 1 / -1; color: var(--muted); font-family: var(--f-ui); }
 .stats { display: flex; flex-wrap: wrap; gap: 6px; }
 </style>
@@ -336,16 +355,46 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
       </div>
       <div class="strip"><span class="who" id="meWho"><i class="w"></i>Вы</span><span class="evaltxt" id="evaltxt">0.0</span></div>
       <div class="status" id="status">Загружаю Stockfish<span class="dots"></span></div>
-      <div class="actions">
+      <div class="actions" id="mainActions">
         <button class="btn primary" id="hintBtn" type="button">Подсказка</button>
         <button class="btn" id="undoBtn" type="button" title="Ctrl+Z">↶ Отменить ход</button>
         <button class="btn" id="flipBtn" type="button">Развернуть доску</button>
         <button class="btn" id="swapBtn" type="button" title="Поменяться цветами с соперником">⇄ Поменяться</button>
         <button class="btn" id="newBtn" type="button">Новая партия</button>
+        <button class="btn" id="reviewBtn" type="button" title="Вставить запись партии и пройти её по ходам с оценками Stockfish">Разбор партии</button>
+      </div>
+      <div class="actions" id="reviewNav" hidden>
+        <button class="btn nav" id="rvFirst" type="button" aria-label="К началу партии" title="К началу (Home)">⏮</button>
+        <button class="btn nav" id="rvPrev" type="button" aria-label="Ход назад" title="Ход назад (←)">◀</button>
+        <button class="btn nav" id="rvNext" type="button" aria-label="Ход вперёд" title="Ход вперёд (→)">▶</button>
+        <button class="btn nav" id="rvLast" type="button" aria-label="К концу партии" title="К концу (End)">⏭</button>
+        <button class="btn" id="rvFlip" type="button">Развернуть доску</button>
+        <button class="btn" id="rvExit" type="button">Выйти из разбора</button>
       </div>
     </section>
 
     <aside class="side">
+      <section class="panel review" id="reviewPanel" aria-label="Разбор партии" hidden>
+        <h2>Разбор партии</h2>
+        <form class="rv-import" id="rvForm" autocomplete="off">
+          <label for="pgnInput" class="note-small">Вставьте запись партии (PGN) или просто ходы, например <code>1. e4 e5 2. Qh5 g6</code>. Можно и русской нотацией: <code>2. Фh5 Кc6</code>.</label>
+          <textarea id="pgnInput" rows="5" spellcheck="false" placeholder="1. e4 e5 2. Nf3 Nc6 3. Bb5 a6"></textarea>
+          <p class="rv-err" id="rvErr" hidden></p>
+          <div class="online-row">
+            <button class="btn primary" id="rvGo" type="submit">Разобрать</button>
+            <button class="btn" id="rvCurrent" type="button">Вставить текущую партию</button>
+            <button class="btn" id="rvCancel" type="button">Отмена</button>
+          </div>
+        </form>
+        <div class="rv-view" id="rvView" hidden>
+          <p class="note-small" id="rvPlayers"></p>
+          <p class="rv-progress" id="rvProgress"></p>
+          <article class="card" id="rvCard" aria-live="polite"></article>
+          <div class="stats rv-stats" id="rvStats"></div>
+          <div class="online-row" id="rvTools"></div>
+          <p class="say" id="rvSummary" hidden></p>
+        </div>
+      </section>
       <section class="panel online" id="onlinePanel" aria-label="Игра по сети">
         <h2>Игра по сети</h2>
         <div class="online-body" id="onlineBody"><p class="note-small">Подключаюсь…</p></div>
@@ -2197,6 +2246,7 @@ let attackView = "off", showBest = false, crack = null;
 let flipped = false, selected = null, targets = new Set(), lastMove = null, arrow = null, drag = null;
 let busy = true, gen = 0, engineReady = false;
 let verdicts = {};             // ply index -> {key, san, loss, bestSan}
+let review = null;             // pasted game being replayed: {moves, fens, ply, res, verdicts, headers}
 let lastEval = { cp: 0, mate: null };
 let lastCoachText = "";
 const cache = new Map();       // fen -> Promise<analysis>
@@ -2691,6 +2741,7 @@ function capHTML(cap, color) {
   return html;
 }
 function updateStrips() {
+  if (review) return reviewStrips();
   const opp = playerColor === "w" ? "b" : "w";
   const topIsOpp = (playerColor === "w") !== flipped;
   const cap = capturedInfo();
@@ -2718,7 +2769,7 @@ function sqFromPoint(x, y) {
   const col = Math.floor((x - r.left) / (r.width / 8)), row = Math.floor((y - r.top) / (r.height / 8));
   return squareAt(Math.min(7, row), Math.min(7, col));
 }
-const canInteract = () => (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
+const canInteract = () => !review && (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
 function select(sq) { selected = sq; targets = new Set(game.moves({ square: sq, verbose: true }).map((m) => m.to)); render(); }
 function deselect() { selected = null; targets = new Set(); render(); }
 function attempt(from, to, dragged) {
@@ -2820,6 +2871,7 @@ function resultText() {
   return "";
 }
 function refreshStatus() {
+  if (review) return reviewStatus();
   if (online) return onlineStatus();
   if (!engineReady) return setStatus("Загружаю Stockfish", true);
   if (game.game_over()) { setStatus(resultText()); $("#status").classList.add("end"); }
@@ -2833,7 +2885,7 @@ function refreshStatus() {
 }
 // "Best move" mode: draw Stockfish's best move as an arrow before each of the player's moves.
 function maybeShowBest() {
-  if (online || !showBest || !engineReady || busy || game.game_over() || game.turn() !== playerColor) return;
+  if (online || review || !showBest || !engineReady || busy || game.game_over() || game.turn() !== playerColor) return;
   const fen = game.fen();
   analyze(fen).then((r) => {
     if (!showBest || busy || game.fen() !== fen || !r.bestmove) return;
@@ -2843,6 +2895,7 @@ function maybeShowBest() {
   }).catch(() => {});
 }
 function renderMoves() {
+  if (review) return renderReviewMoves();
   const ol = $("#movelist"), hist = game.history();
   ol.innerHTML = "";
   if (!hist.length) { ol.innerHTML = `<li><span class="empty">Партия ещё не началась.</span></li>`; return; }
@@ -2859,9 +2912,9 @@ function renderMoves() {
 }
 function save() {
   const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode };
-  if (online) {
+  if (online || review) {
     // The Stockfish game stays as it was; only the settings follow along.
-    saveOnline();
+    if (online) saveOnline();
     try { const s = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; localStorage.setItem(KEY, JSON.stringify({ ...s, ...prefs })); } catch (_) {}
     return;
   }
@@ -3009,8 +3062,8 @@ let commentChain = Promise.resolve();
 function queue(fn) { commentChain = commentChain.then(fn).catch(() => {}); return commentChain; }
 
 // ---------- verdicts ----------
-function classify(before, after, mv) {
-  const P = playerColor === "w" ? 1 : -1;
+function classify(before, after, mv, color = playerColor) {
+  const P = color === "w" ? 1 : -1;
   const uci = mv.from + mv.to + (mv.promotion || "");
   const bestN = scoreNum(before.score) * P, afterN = scoreNum(after.score) * P;
   const loss = Math.max(0, Math.round(bestN - afterN));
@@ -3141,10 +3194,13 @@ function finish() {
     const b = document.createElement("span"); b.className = "badge v-" + k; b.textContent = `${VERDICT[k]}: ${counts[k]}`; st.appendChild(b);
   });
   if (st.children.length) c.appendChild(st);
-  if (claudeOff) return;
   const tools = document.createElement("div"); tools.className = "tools";
+  const pgn = game.pgn();
+  tools.appendChild(btnEl("Пересмотреть по ходам", "", () => { if (!online && !review) enterReview(pgn); }));
+  c.appendChild(tools);
+  if (claudeOff) return;
   const btn = document.createElement("button"); btn.type = "button"; btn.className = "btn small"; btn.textContent = "Разбор партии";
-  tools.appendChild(btn); c.appendChild(tools);
+  tools.appendChild(btn);
   const out = para(c, "say"); out.hidden = true;
   const hist = game.history(), result = resultText();
   btn.addEventListener("click", () => {
@@ -3164,6 +3220,272 @@ ${marks}
     queue(() => ask(out, prompt, {}, () => btn.click())).then(() => { btn.disabled = false; });
   });
 }
+
+// ---------- game review ----------
+// A pasted game (PGN or bare moves, Latin or Russian letters) replayed move by move with Stockfish verdicts for both sides.
+// The live Stockfish game stays in localStorage meanwhile and comes back on exit.
+let engineUp;
+const engineReadyP = new Promise((r) => { engineUp = r; });
+function readGame(text) {
+  const clean = text
+    .replace(/\{[^}]*\}/g, " ").replace(/;[^\n]*/g, " ")
+    .replace(/…/g, "...").replace(/[−–—]/g, "-")
+    .replace(/Кр/g, "K").replace(/Ф/g, "Q").replace(/Л/g, "R").replace(/С/g, "B").replace(/К/g, "N")
+    .replace(/(^|[\s.])0-0-0(?=[\s+#!?]|$)/g, "$1O-O-O").replace(/(^|[\s.])0-0(?=[\s+#!?]|$)/g, "$1O-O")
+    .replace(/[:х×]/g, "x");
+  const c = new Chess();
+  if (/^\s*\[/.test(clean) && c.load_pgn(clean, { sloppy: true }) && c.history().length) return { chess: c, headers: c.header() };
+  c.reset();
+  const body = clean.replace(/\[[^\]]*\]/g, " ").replace(/\([^)]*\)/g, " ");
+  const toks = body.split(/\s+/).map((t) => t.replace(/^\d+\.+/, "").replace(/[!?]+$/, "")).filter((t) => t && !/^\d+\.*$/.test(t) && !/^(1-0|0-1|1\/2-1\/2|½-½|\*)$/.test(t) && !/^\$\d+$/.test(t));
+  for (const t of toks) {
+    const n = c.history().length;
+    if (!c.move(t, { sloppy: true })) {
+      return { error: `Не понял ход ${Math.floor(n / 2) + 1}${n % 2 ? "…" : "."} ${ru(t)}. Проверьте запись: такого хода нет в этой позиции.` };
+    }
+  }
+  if (!c.history().length) return { error: "Не нашёл в тексте ни одного хода." };
+  return { chess: c, headers: {} };
+}
+function terminalFor(fen) {
+  const c = new Chess(fen);
+  const cp = c.in_checkmate() ? (c.turn() === "w" ? -10000 : 10000) : 0;
+  return { bestmove: null, pv: [], score: { cp, mate: null, over: true } };
+}
+function openReviewForm(prefill) {
+  if (online) {
+    const c = card(); c.innerHTML = `<header><span class="kind">Разбор партии</span></header>`;
+    para(c, "meta", "Во время игры по сети разбор недоступен. Сначала выйдите из сетевой партии.");
+    return;
+  }
+  $("#reviewPanel").hidden = false; $("#rvForm").hidden = false; $("#rvView").hidden = true; $("#rvErr").hidden = true;
+  if (prefill != null) $("#pgnInput").value = prefill;
+  $("#rvCancel").hidden = !!review;
+  $("#reviewPanel").scrollIntoView({ block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+  $("#pgnInput").focus();
+}
+function enterReview(text) {
+  const r = readGame(text);
+  if (r.error) { openReviewForm(text); $("#rvErr").hidden = false; $("#rvErr").textContent = r.error; return false; }
+  if (online) return false;
+  gen++; engine.stop(); busy = false;
+  if (sidePickCancel && !$("#sidePick").hidden) sidePickCancel();
+  const moves = r.chess.history({ verbose: true }), fens = [];
+  const c = new Chess(); fens.push(c.fen());
+  for (const m of moves) { c.move(m); fens.push(c.fen()); }
+  if (!review) review = { savedFlipped: flipped };
+  Object.assign(review, { moves, fens, ply: moves.length, res: [], verdicts: {}, headers: r.headers || {}, result: c.game_over(), token: {} });
+  selected = null; targets = new Set(); arrow = null;
+  $("#mainActions").hidden = true; $("#reviewNav").hidden = false;
+  $("#reviewPanel").hidden = false; $("#rvForm").hidden = true; $("#rvView").hidden = false;
+  $("#rvSummary").hidden = true; $("#rvSummary").textContent = "";
+  $(".panel.moves").classList.add("rv");
+  const h = review.headers, names = h.White || h.Black ? `${h.White || "?"} — ${h.Black || "?"}${h.Result && h.Result !== "*" ? ", " + h.Result : ""}` : "";
+  $("#rvPlayers").textContent = names; $("#rvPlayers").hidden = !names;
+  renderReviewTools();
+  reviewGo(review.ply);
+  analyseReview(review.token);
+  return true;
+}
+function exitReview(quiet) {
+  if (!review) return;
+  const savedFlipped = review.savedFlipped;
+  review = null; gen++; engine.stop();
+  $("#mainActions").hidden = false; $("#reviewNav").hidden = true; $("#reviewPanel").hidden = true;
+  $(".panel.moves").classList.remove("rv");
+  game.reset(); verdicts = {}; arrow = null; selected = null; targets = new Set(); lastMove = null; crack = null;
+  restore(); flipped = savedFlipped;
+  if (game.in_checkmate()) crack = { fen: game.fen(), svg: crackSVG(), fresh: false };
+  setEval({ cp: 0, mate: null });
+  render(); renderMoves(); updateStrips(); refreshStatus();
+  if (quiet) return;
+  if (engineReady && !game.game_over()) { if (game.turn() !== playerColor) engineOpens(); else analyze(game.fen()); }
+  else if (game.game_over()) setEval(terminalEval().score);
+}
+// Engine pass over every position, start to end; verdicts fill in as soon as both sides of a move are known.
+async function analyseReview(token) {
+  await engineReadyP;
+  const R = review;
+  if (!R || R.token !== token) return;
+  for (let i = 0; i < R.fens.length; i++) {
+    if (review !== R || R.token !== token) return;
+    const fen = R.fens[i];
+    let a;
+    try { a = new Chess(fen).game_over() ? terminalFor(fen) : await analyze(fen); } catch (_) { a = null; }
+    if (review !== R || R.token !== token) return;
+    R.res[i] = a;
+    if (i > 0 && R.res[i - 1] && a) {
+      const mv = R.moves[i - 1], before = R.res[i - 1];
+      const v = classify(before, a, mv, mv.color);
+      R.verdicts[i - 1] = { key: v.key, san: ru(mv.san), loss: v.loss, bestSan: v.isBest ? "" : (pvSan(R.fens[i - 1], before.pv, 1)[0] || ""), best: before.bestmove, line: pvSan(R.fens[i - 1], before.pv).join(" ") };
+    }
+    if (i === R.ply && a) setEval(a.score);
+    if (i === R.ply || i === R.ply - 1 || i - 1 === R.ply - 1) { renderReviewCard(); if (i === R.ply) reviewArrow(); render(); }
+    renderReviewMoves(); reviewStatus();
+  }
+  renderReviewStats(); renderReviewTools();
+}
+function reviewArrow() {
+  const R = review, v = R.verdicts[R.ply - 1];
+  arrow = v && v.best && !["best", "excellent", "good"].includes(v.key) ? { from: v.best.slice(0, 2), to: v.best.slice(2, 4) } : null;
+}
+function reviewGo(p, sound) {
+  if (!review) return;
+  const R = review, ply = Math.max(0, Math.min(R.moves.length, p));
+  const stepped = ply === R.ply + 1;
+  R.ply = ply;
+  game.load(R.fens[ply]);
+  const mv = R.moves[ply - 1];
+  lastMove = mv ? { from: mv.from, to: mv.to } : null;
+  selected = null; targets = new Set();
+  crack = game.in_checkmate() ? { fen: game.fen(), svg: crackSVG(), fresh: false } : null;
+  reviewArrow();
+  const a = R.res[ply];
+  if (a) setEval(a.score);
+  render(); renderReviewMoves(); renderReviewCard(); reviewStatus(); updateStrips();
+  if (sound && stepped && mv) playSound(mv);
+}
+const moveNo = (k) => `${Math.floor(k / 2) + 1}${k % 2 ? "…" : ". "}`;
+function renderReviewMoves() {
+  const R = review, ol = $("#movelist");
+  ol.innerHTML = "";
+  for (let i = 0; i < R.moves.length; i += 2) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="n">${i / 2 + 1}.</span>` + [i, i + 1].map((k) => {
+      if (k >= R.moves.length) return `<span></span>`;
+      const v = R.verdicts[k];
+      return `<span class="m${v ? " v-" + v.key : ""}${k === R.ply - 1 ? " cur" : ""}" data-ply="${k + 1}" role="button" tabindex="0">${ru(R.moves[k].san)}${v ? `<i title="${VERDICT[v.key]}"></i>` : ""}</span>`;
+    }).join("");
+    ol.appendChild(li);
+  }
+  const cur = ol.querySelector(".cur");
+  if (cur) { const top = cur.offsetTop - ol.offsetTop; if (top < ol.scrollTop || top > ol.scrollTop + ol.clientHeight - 24) ol.scrollTop = top - 60; }
+  else if (R.ply === 0) ol.scrollTop = 0;
+}
+function renderReviewCard() {
+  const R = review, el = $("#rvCard"), k = R.ply - 1;
+  el.innerHTML = "";
+  if (k < 0) {
+    el.innerHTML = `<header><span class="kind">Начальная позиция</span><span class="ev"></span></header>`;
+    para(el, "meta", "Листайте партию кнопками под доской или стрелками ← → на клавиатуре. По ходу в списке можно кликнуть.");
+  } else {
+    const mv = R.moves[k], v = R.verdicts[k], a = R.res[R.ply];
+    const head = document.createElement("header");
+    head.innerHTML = `<span class="san"></span><span class="badge v-${v ? v.key : "pending"}">${VERDICT[v ? v.key : "pending"]}</span><span class="ev">${a ? fmtScore(a.score) : ""}</span>`;
+    setRich(head.querySelector(".san"), moveNo(k) + ru(mv.san), mv.color);
+    el.appendChild(head);
+    para(el, "meta", `Ход ${mv.color === "w" ? "белых" : "чёрных"}.`);
+    if (v && v.bestSan) {
+      const m = para(el, "meta"); m.innerHTML = `Stockfish предлагал <b></b> (${fmtScore(R.res[k].score)})${arrow ? ", стрелка на доске" : ""}`;
+      setRich(m.querySelector("b"), v.bestSan, mv.color);
+    }
+    if (game.game_over()) para(el, "meta", reviewResult());
+  }
+  if (!claudeOff && !SITE) {
+    const out = para(el, "say"); out.hidden = true;
+    const t = document.createElement("div"); t.className = "tools";
+    const b = btnEl(k < 0 ? "Что важно в начале партии?" : "Объяснить ход", "", () => explainReviewMove(k, out, b));
+    if (k >= 0 && !(R.verdicts[k] && R.res[R.ply])) b.disabled = true;
+    if (k >= 0) { t.appendChild(b); el.appendChild(t); }
+  }
+}
+function reviewResult() {
+  if (game.in_checkmate()) return `Мат. Победили ${game.turn() === "w" ? "чёрные" : "белые"}.`;
+  if (game.in_stalemate()) return "Пат. Ничья.";
+  if (game.insufficient_material()) return "Недостаточно материала. Ничья.";
+  if (game.in_draw()) return "Ничья.";
+  return "";
+}
+function explainReviewMove(k, out, btn) {
+  const R = review, mv = R.moves[k], v = R.verdicts[k], before = R.res[k], after = R.res[k + 1];
+  if (!v || !before || !after) return;
+  const tok = R.token;
+  btn.disabled = true; out.hidden = false;
+  const hist = R.moves.slice(0, k).map((m) => m.san), next = R.moves.slice(k + 1, k + 5).map((m) => ru(m.san));
+  const prompt = `${COACH}
+
+Ученик разбирает уже сыгранную партию. Партия до этого хода: ${movesRu(hist)}
+
+Позиция перед ходом:
+${describe(R.fens[k])}
+
+Ход ${mv.color === "w" ? "белых" : "чёрных"}: ${ru(mv.san)}. Вердикт Stockfish: ${VERDICT[v.key]}${v.loss ? `, потеря около ${(v.loss / 100).toFixed(1)} пешки` : ""}.
+Оценка при лучшей игре: ${fmtScore(before.score)}. Лучший ход по Stockfish: ${v.bestSan || ru(mv.san)}; главный вариант: ${v.line || "нет данных"}.
+Оценка после хода: ${fmtScore(after.score)}.
+${next.length ? "Дальше в партии было: " + next.join(" ") + "." : "На этом партия закончилась. " + reviewResult()}
+
+Напиши комментарий из 2–4 коротких предложений: в чём смысл хода или в чём ошибка, и если был ход лучше, какова его идея.`;
+  queue(async () => { if (review && review.token === tok) await ask(out, prompt, {}, () => explainReviewMove(k, out, btn)); });
+}
+function renderReviewStats() {
+  const R = review, el = $("#rvStats");
+  el.innerHTML = "";
+  for (const col of ["w", "b"]) {
+    const counts = {};
+    Object.entries(R.verdicts).forEach(([k, v]) => { if (R.moves[k].color === col) counts[v.key] = (counts[v.key] || 0) + 1; });
+    const row = document.createElement("div"); row.className = "rv-side";
+    row.innerHTML = `<span>${col === "w" ? "Белые" : "Чёрные"}</span>`;
+    ["best", "excellent", "good", "inaccuracy", "mistake", "blunder"].forEach((key) => {
+      if (!counts[key]) return;
+      const b = document.createElement("span"); b.className = "badge v-" + key; b.textContent = `${VERDICT[key]}: ${counts[key]}`; row.appendChild(b);
+    });
+    if (row.children.length > 1) el.appendChild(row);
+  }
+}
+function renderReviewTools() {
+  const R = review, t = $("#rvTools");
+  t.innerHTML = "";
+  t.appendChild(btnEl("Другая партия", "", () => openReviewForm("")));
+  const done = R.res.length === R.fens.length && R.res.every(Boolean);
+  if (claudeOff || SITE) return;
+  const out = $("#rvSummary");
+  const b = btnEl("Общий разбор от тренера", "", () => {
+    b.disabled = true; out.hidden = false;
+    const marks = Object.entries(R.verdicts).sort((a, z) => a[0] - z[0]).filter(([, v]) => ["inaccuracy", "mistake", "blunder"].includes(v.key))
+      .map(([k, v]) => `${moveNo(+k)}${v.san} (${R.moves[k].color === "w" ? "белые" : "чёрные"}) — ${VERDICT[v.key]}, лучше было ${v.bestSan || "?"}`).join("\n") || "серьёзных ошибок нет";
+    const tok = R.token;
+    const prompt = `${COACH}
+
+Ученик разбирает уже сыгранную партию. Партия: ${movesRu(R.moves.map((m) => m.san))}
+${R.result ? "Итог: " + (() => { const c = new Chess(R.fens[R.fens.length - 1]); return c.in_checkmate() ? `мат, победили ${c.turn() === "w" ? "чёрные" : "белые"}` : "ничья"; })() : "Партия не доиграна до конца."}
+Ошибки по оценке Stockfish:
+${marks}
+
+Сделай короткий разбор партии в 4–6 предложениях: как шла партия, один-два ключевых момента и один конкретный урок.`;
+    queue(async () => { if (review && review.token === tok) await ask(out, prompt, {}, () => b.click()); }).then(() => { b.disabled = false; });
+  });
+  b.disabled = !done;
+  t.appendChild(b);
+}
+function reviewStatus() {
+  const R = review, n = R.moves.length;
+  const got = R.res.filter(Boolean).length;
+  $("#rvProgress").textContent = got < R.fens.length ? (engineReady ? `Stockfish оценивает ходы: ${Math.max(0, got - 1)} из ${n}…` : "Загружаю Stockfish…") : "";
+  setStatus(R.ply === 0 ? `Разбор партии: начальная позиция` : `Разбор партии: ход ${moveNo(R.ply - 1)}${ru(R.moves[R.ply - 1].san)}, ${R.ply} из ${n}`);
+  if (game.game_over()) $("#status").classList.add("end");
+  $("#rvFirst").disabled = $("#rvPrev").disabled = R.ply === 0;
+  $("#rvLast").disabled = $("#rvNext").disabled = R.ply === n;
+}
+function reviewStrips() {
+  const h = review.headers, cap = capturedInfo();
+  const top = flipped ? "w" : "b", bottom = flipped ? "b" : "w";
+  const name = (c) => esc((c === "w" ? h.White : h.Black) || (c === "w" ? "Белые" : "Чёрные"));
+  $("#oppWho").innerHTML = `<i class="${top}"></i>${name(top)}${capHTML(cap, top)}`;
+  $("#meWho").innerHTML = `<i class="${bottom}"></i>${name(bottom)}${capHTML(cap, bottom)}`;
+  $("#oppSub").textContent = "разбор партии";
+}
+$("#reviewBtn").addEventListener("click", () => openReviewForm(null));
+$("#rvCurrent").addEventListener("click", () => { $("#pgnInput").value = game.history().length ? game.pgn() : ""; $("#pgnInput").focus(); });
+$("#rvCancel").addEventListener("click", () => { $("#reviewPanel").hidden = true; });
+$("#rvForm").addEventListener("submit", (e) => { e.preventDefault(); enterReview($("#pgnInput").value); });
+$("#rvFirst").addEventListener("click", () => reviewGo(0));
+$("#rvPrev").addEventListener("click", () => reviewGo(review.ply - 1));
+$("#rvNext").addEventListener("click", () => reviewGo(review.ply + 1, true));
+$("#rvLast").addEventListener("click", () => reviewGo(review.moves.length));
+$("#rvFlip").addEventListener("click", () => { flipped = !flipped; render(); updateStrips(); });
+$("#rvExit").addEventListener("click", () => exitReview(false));
+$("#movelist").addEventListener("click", (e) => { const m = review && e.target.closest(".m[data-ply]"); if (m) reviewGo(+m.dataset.ply); });
+$("#movelist").addEventListener("keydown", (e) => { const m = review && (e.key === "Enter" || e.key === " ") && e.target.closest(".m[data-ply]"); if (m) { e.preventDefault(); reviewGo(+m.dataset.ply); } });
 
 // ---------- side picker ----------
 // Resolves "w", "b", or null when cancelled.
@@ -3262,6 +3584,7 @@ function undoCount() {
   return Math.min(n, len - minLen);
 }
 function undo() {
+  if (review) return;
   if (online) return askTakeback();
   const n = undoCount();
   if (n <= 0 || !engineReady) return;
@@ -3278,7 +3601,13 @@ function undo() {
 }
 $("#undoBtn").addEventListener("click", undo);
 document.addEventListener("keydown", (e) => {
-  if (e.target.closest && e.target.closest("input")) return;
+  if (e.target.closest && e.target.closest("input, textarea")) return;
+  if (review && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const step = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    if (step) { e.preventDefault(); reviewGo(review.ply + step, step === 1); return; }
+    if (e.key === "Home") { e.preventDefault(); reviewGo(0); return; }
+    if (e.key === "End") { e.preventDefault(); reviewGo(review.moves.length); return; }
+  }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
 });
 $("#flipBtn").addEventListener("click", () => { flipped = !flipped; render(); save(); });
@@ -3718,6 +4047,7 @@ async function enterOnline(code, color, saved) {
     return;
   }
   connecting = false;
+  if (review) exitReview(true);
   gen++; engine.stop(); busy = false;
   if (sidePickCancel && !$("#sidePick").hidden) sidePickCancel();
   const play = saved && ["w", "b"].includes(saved.play) ? saved.play : color;
@@ -3910,7 +4240,7 @@ render(); renderMoves(); refreshStatus();
 if (!resumed && !(typeof linkInvite !== "undefined" && linkInvite)) {
   let hasOnline = false;
   try { hasOnline = !!localStorage.getItem(ONLINE_KEY); } catch (_) {}
-  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
+  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online || review || !c) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
 }
 
 engine.start().then(async (ok) => {
@@ -3920,6 +4250,8 @@ engine.start().then(async (ok) => {
     para(c, "meta", "Stockfish не запустился в этом браузере, поэтому играет и оценивает ходы упрощённый движок. Он заметно слабее.");
   }
   engineReady = true; busy = false;
+  engineUp();
+  if (review) return;
   updateStrips();
   if (game.game_over()) { setEval(terminalEval().score); refreshStatus(); return; }
   if (online) { onlineEval(); return refreshStatus(); }
