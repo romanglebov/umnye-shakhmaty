@@ -301,6 +301,10 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
         <div class="seg" id="adSeg"><button type="button" data-v="off" aria-pressed="false">Выкл</button><button type="button" data-v="hover" aria-pressed="true">При наведении</button><button type="button" data-v="on" aria-pressed="false">Вкл</button></div>
         <span class="note-small">в углах клетки с фигурой: красный меч — сколько чужих фигур её бьют, зелёный щит — сколько своих защищают</span>
       </div>
+      <div class="row"><span class="lbl">…и на пустых клетках</span>
+        <div class="seg" id="adEmptySeg"><button type="button" data-v="off" aria-pressed="true">Нет</button><button type="button" data-v="on" aria-pressed="false">Да</button></div>
+        <span class="note-small">на пустом поле меч — сколько фигур соперника его бьют, щит — сколько ваших</span>
+      </div>
       <div class="row"><span class="lbl">Щиты защиты</span>
         <div class="seg" id="shieldSeg"><button type="button" data-v="on" aria-pressed="true">Вкл</button><button type="button" data-v="off" aria-pressed="false">Выкл</button></div>
         <span class="note-small">щит у фигуры, которую защищает своя</span>
@@ -2254,7 +2258,7 @@ function seeMap() {
   seeCache = { fen, map };
   return map;
 }
-let showShields = true, showSee = true, showPotential = true, heatMode = "off", adMode = "hover";
+let showShields = true, showSee = true, showPotential = true, heatMode = "off", adMode = "hover", adEmpty = false;
 const AD_SWORD = `<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#1c1a18" stroke-width="1.3" stroke-linejoin="round" fill="#F0503F"><path d="M21.5 2.5 21 7.2 11.6 16.6 7.4 12.4 16.8 3z"/><path d="M4.6 10.4l1.6-1.6 9 9-1.6 1.6z"/><path d="M8.1 14.4l1.5 1.5-4.3 4.3-1.5-1.5z"/><circle cx="3.6" cy="20.4" r="1.9"/></g><path d="M20 4 10 14" stroke="rgba(255,255,255,.55)" stroke-width="1" stroke-linecap="round"/></svg>`;
 const AD_SHIELD = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z" fill="#5BC46A" stroke="#1c1a18" stroke-width="1.7" stroke-linejoin="round"/></svg>`;
 const adBadge = (cls, icon, n, label) => `<span class="ad ${cls}${n ? "" : " zero"}" title="${label}: ${n}">${icon}${n}</span>`;
@@ -2714,10 +2718,12 @@ function render() {
       if (guarded[p.color].has(sq)) html += v === undefined ? SHIELD[p.color] : shieldSee(p.color, v);
       else if (v > 0) html += hangTag(v);
     }
-    if (hits && p) {
-      const atk = hits[p.color === "w" ? "b" : "w"].get(sq) || 0, def = hits[p.color].get(sq) || 0;
+    if (hits && (p || adEmpty)) {
+      // An empty square is seen from the player's side: whose pieces hit it.
+      const own = p ? p.color : playerColor;
+      const atk = hits[own === "w" ? "b" : "w"].get(sq) || 0, def = hits[own].get(sq) || 0;
       if (adMode === "hover" || atk) html += adBadge("sw", AD_SWORD, atk, "Нападений");
-      if (p.type !== "k" && (adMode === "hover" || def)) html += adBadge("df", AD_SHIELD, def, "Защит");
+      if (!(p && p.type === "k") && (adMode === "hover" || def)) html += adBadge("df", AD_SHIELD, def, "Защит");
     }
     el.innerHTML = `<span class="atk"></span>` + html + `<span class="hint"></span>`;
     el.setAttribute("aria-label", sq + (p ? ", " + (p.color === "w" ? "белый " : "чёрный ") + NAME_RU[p.type] : ""));
@@ -2936,7 +2942,7 @@ function renderMoves() {
   ol.scrollTop = ol.scrollHeight;
 }
 function save() {
-  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode, adMode };
+  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode, adMode, adEmpty };
   if (online || review) {
     // The Stockfish game stays as it was; only the settings follow along.
     if (online) saveOnline();
@@ -3686,6 +3692,7 @@ function initControls() {
   segInit("#modeSeg", mode, (v) => { mode = v; save(); });
   segInit("#atkSeg", attackView, (v) => { attackView = v; render(); save(); });
   segInit("#adSeg", adMode, (v) => { adMode = v; render(); save(); });
+  segInit("#adEmptySeg", adEmpty ? "on" : "off", (v) => { adEmpty = v === "on"; render(); save(); });
   segInit("#shieldSeg", showShields ? "on" : "off", (v) => { showShields = v === "on"; render(); save(); });
   segInit("#seeSeg", showSee ? "on" : "off", (v) => { showSee = v === "on"; render(); save(); });
   segInit("#potSeg", showPotential ? "on" : "off", (v) => { showPotential = v === "on"; render(); save(); });
@@ -4244,6 +4251,7 @@ function restore() {
   if (typeof s.showSee === "boolean") showSee = s.showSee;
   if (typeof s.showPotential === "boolean") showPotential = s.showPotential;
   if (["off", "hover", "on"].includes(s.adMode)) adMode = s.adMode;
+  if (typeof s.adEmpty === "boolean") adEmpty = s.adEmpty;
   // prefs v2: the field map starts switched off, also for saves made before that default.
   if (s.v >= 2 && ["sum", "table", "off"].includes(s.heatMode)) heatMode = s.heatMode;
   if (s.playerColor === "w" || s.playerColor === "b") playerColor = pendingColor = s.playerColor;
