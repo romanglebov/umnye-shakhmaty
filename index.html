@@ -235,6 +235,31 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .v-best { --vc: var(--v-best); } .v-excellent { --vc: var(--v-best); } .v-good { --vc: var(--v-good); }
 .v-inaccuracy { --vc: var(--v-inacc); } .v-mistake { --vc: var(--v-mist); } .v-blunder { --vc: var(--v-blun); }
 .v-pending { --vc: var(--muted); }
+/* Lesson: Scholar's mate drills */
+.lesson { gap: 10px; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.lesson .ls-head { display: grid; gap: 2px; }
+.lesson h3 { margin: 0; font-family: var(--f-text); font-weight: 600; font-size: 1.15rem; }
+.ls-log { display: grid; gap: 8px; max-height: 340px; overflow-y: auto; }
+@media (max-width: 920px) { .ls-log { max-height: none; } }
+.ls-msg { margin: 0; font-family: var(--f-text); font-size: .98rem; line-height: 1.55; padding: 10px 12px; border-radius: 10px; background: var(--raise); border: 1px solid var(--line); overflow-wrap: anywhere; opacity: .62; }
+.ls-msg.now { opacity: 1; }
+.ls-msg.good { border-color: color-mix(in srgb, var(--v-good) 55%, var(--line)); background: color-mix(in srgb, var(--v-good) 9%, var(--raise)); }
+.ls-msg.bad { border-color: color-mix(in srgb, var(--v-blun) 55%, var(--line)); background: color-mix(in srgb, var(--v-blun) 8%, var(--raise)); }
+.ls-msg.alt { border-color: color-mix(in srgb, var(--v-inacc) 55%, var(--line)); }
+.ls-msg.hint { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: var(--accent-soft); }
+.ls-msg.wait { color: var(--muted); font-style: italic; }
+.ls-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.ls-list { display: grid; gap: 6px; }
+.ls-item { font: inherit; text-align: left; display: grid; grid-template-columns: 1.6em 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--raise); color: var(--ink); cursor: pointer; }
+.ls-item:hover { border-color: var(--muted); }
+.ls-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ls-n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .85rem; }
+.ls-dots { display: inline-flex; gap: 4px; }
+.ls-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.ls-dots i.on { background: var(--v-good); border-color: var(--v-good); }
+.sq.mark::after { content: ""; position: absolute; inset: 6%; border-radius: 50%; box-shadow: inset 0 0 0 .55cqw rgba(226,51,42,.85); pointer-events: none; z-index: 1; }
+body.in-lesson .actions, body.in-lesson #onlinePanel, body.in-lesson .panel.coach { display: none; }
+.lesson-entry { border-color: var(--accent); color: var(--accent); }
 .dots::after { content: "…"; animation: blink 1.2s infinite; }
 @keyframes blink { 50% { opacity: .2; } }
 @media (prefers-reduced-motion: reduce) { .dots::after { animation: none; } .evalbar .fill { transition: none; } }
@@ -342,10 +367,18 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
         <button class="btn" id="flipBtn" type="button">Развернуть доску</button>
         <button class="btn" id="swapBtn" type="button" title="Поменяться цветами с соперником">⇄ Поменяться</button>
         <button class="btn" id="newBtn" type="button">Новая партия</button>
+        <button class="btn lesson-entry" id="lessonBtn" type="button">Урок: защита от детского мата</button>
       </div>
     </section>
 
     <aside class="side">
+      <section class="panel lesson" id="lessonPanel" aria-label="Урок" hidden>
+        <h2>Урок с наставником</h2>
+        <div class="ls-head"><h3 id="lsTitle">Защита от детского мата</h3><p class="note-small" id="lsSub" hidden></p></div>
+        <div class="ls-log" id="lsLog" aria-live="polite"></div>
+        <div class="ls-list" id="lsList"></div>
+        <div class="ls-tools" id="lsTools"></div>
+      </section>
       <section class="panel online" id="onlinePanel" aria-label="Игра по сети">
         <h2>Игра по сети</h2>
         <div class="online-body" id="onlineBody"><p class="note-small">Подключаюсь…</p></div>
@@ -2196,6 +2229,7 @@ let showShields = true, showSee = true, showPotential = true, heatMode = "off";
 let attackView = "off", showBest = false, crack = null;
 let flipped = false, selected = null, targets = new Set(), lastMove = null, arrow = null, drag = null;
 let busy = true, gen = 0, engineReady = false;
+let lesson = null;             // lesson run state (Scholar's mate drills); null in a normal game
 let verdicts = {};             // ply index -> {key, san, loss, bestSan}
 let lastEval = { cp: 0, mate: null };
 let lastCoachText = "";
@@ -2432,7 +2466,7 @@ function knightPath(ar) {
 }
 function arrowSVG(ar) {
   const a = visual(ar.from), z = visual(ar.to), p = game.get(ar.from);
-  const fill = p && p.color === "b" ? "#565352" : "#F9F9F9", ink = "#262421";
+  const fill = ar.tone === "t" ? "#E2332A" : ar.tone === "h" ? "#3E9E4A" : p && p.color === "b" ? "#565352" : "#F9F9F9", ink = "#262421";
   const x1 = a.col + .5, y1 = a.row + .5, x2 = z.col + .5, y2 = z.row + .5;
   const dxs = Math.abs(x2 - x1), dys = Math.abs(y2 - y1);
   const pts = [[x1, y1]];
@@ -2628,6 +2662,7 @@ function render() {
     if (drag && drag.started && drag.sq === sq) cls += " lifting";
     if (atkMe && atkMe.has(sq)) cls += " a-me";
     if (atkOp && atkOp.has(sq)) cls += " a-op";
+    if (lesson && lesson.marks.includes(sq)) cls += " mark";
     el.className = cls;
     el.dataset.sq = sq;
     let html = p ? pieceHTML(p) : "";
@@ -2647,7 +2682,7 @@ function render() {
     el.innerHTML = `<span class="atk"></span>` + html + `<span class="hint"></span>`;
     el.setAttribute("aria-label", sq + (p ? ", " + (p.color === "w" ? "белый " : "чёрный ") + NAME_RU[p.type] : ""));
   });
-  $("#arrowG").innerHTML = arrow ? arrowSVG(arrow) : "";
+  $("#arrowG").innerHTML = (arrow ? arrowSVG(arrow) : "") + (lesson ? lesson.arrows.map(arrowSVG).join("") : "");
   const src = arrow && game.get(arrow.from);
   const over = !!src && ((src.type === "n" && knightPath(arrow).blocked > 0) || !!game.get(arrow.to) || (src.type === "p" && arrow.from[0] !== arrow.to[0]));
   $("#arrows").classList.toggle("over", over);
@@ -2694,11 +2729,11 @@ function updateStrips() {
   const opp = playerColor === "w" ? "b" : "w";
   const topIsOpp = (playerColor === "w") !== flipped;
   const cap = capturedInfo();
-  const oppName = online ? esc(online.oppName || "Соперник") : "Stockfish";
+  const oppName = lesson ? "Наставник" : online ? esc(online.oppName || "Соперник") : "Stockfish";
   const oppHTML = `<i class="${opp}"></i>${oppName}${capHTML(cap, opp)}`, meHTML = `<i class="${playerColor}"></i>Вы, ${colorRu(playerColor)}${capHTML(cap, playerColor)}`;
   $("#oppWho").innerHTML = topIsOpp ? oppHTML : meHTML;
   $("#meWho").innerHTML = topIsOpp ? meHTML : oppHTML;
-  $("#oppSub").textContent = online ? (oppHere() ? "по сети" : "по сети, не в сети") : usingMini ? "запасной движок" : LEVELS[level].name;
+  $("#oppSub").textContent = lesson ? "урок" : online ? (oppHere() ? "по сети" : "по сети, не в сети") : usingMini ? "запасной движок" : LEVELS[level].name;
 }
 // Shield preview while dragging: would the piece be defended on that square?
 function guardedNow(sq) { return attackedBy(game.board(), game.get(sq).color).has(sq); }
@@ -2718,7 +2753,7 @@ function sqFromPoint(x, y) {
   const col = Math.floor((x - r.left) / (r.width / 8)), row = Math.floor((y - r.top) / (r.height / 8));
   return squareAt(Math.min(7, row), Math.min(7, col));
 }
-const canInteract = () => (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
+const canInteract = () => lesson ? lesson.await && !game.game_over() && game.turn() === playerColor && $("#promo").hidden : (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
 function select(sq) { selected = sq; targets = new Set(game.moves({ square: sq, verbose: true }).map((m) => m.to)); render(); }
 function deselect() { selected = null; targets = new Set(); render(); }
 function attempt(from, to, dragged) {
@@ -2820,6 +2855,8 @@ function resultText() {
   return "";
 }
 function refreshStatus() {
+  $("#lessonBtn").disabled = !!online;
+  if (lesson) return lessonStatus();
   if (online) return onlineStatus();
   if (!engineReady) return setStatus("Загружаю Stockfish", true);
   if (game.game_over()) { setStatus(resultText()); $("#status").classList.add("end"); }
@@ -2833,7 +2870,7 @@ function refreshStatus() {
 }
 // "Best move" mode: draw Stockfish's best move as an arrow before each of the player's moves.
 function maybeShowBest() {
-  if (online || !showBest || !engineReady || busy || game.game_over() || game.turn() !== playerColor) return;
+  if (online || lesson || !showBest || !engineReady || busy || game.game_over() || game.turn() !== playerColor) return;
   const fen = game.fen();
   analyze(fen).then((r) => {
     if (!showBest || busy || game.fen() !== fen || !r.bestmove) return;
@@ -2859,6 +2896,11 @@ function renderMoves() {
 }
 function save() {
   const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode };
+  if (lesson) {
+    // The lesson board is never saved; the game left behind stays as it was.
+    try { const s = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; localStorage.setItem(KEY, JSON.stringify({ ...s, ...prefs })); } catch (_) {}
+    return;
+  }
   if (online) {
     // The Stockfish game stays as it was; only the settings follow along.
     saveOnline();
@@ -3027,6 +3069,7 @@ function classify(before, after, mv) {
 
 // ---------- game flow ----------
 async function playerMove(from, to, promotion, anim) {
+  if (lesson) return lessonMove(from, to, promotion, anim);
   if (online) return onlineMove(from, to, promotion, anim);
   const g = gen, fenBefore = game.fen(), ply = game.history().length;
   const histBefore = game.history();
@@ -3262,6 +3305,7 @@ function undoCount() {
   return Math.min(n, len - minLen);
 }
 function undo() {
+  if (lesson) return;
   if (online) return askTakeback();
   const n = undoCount();
   if (n <= 0 || !engineReady) return;
@@ -3277,6 +3321,7 @@ function undo() {
   feed.querySelectorAll(".card[data-ply]").forEach((el) => { if (+el.dataset.ply >= len) el.classList.add("undone"); });
 }
 $("#undoBtn").addEventListener("click", undo);
+$("#lessonBtn").addEventListener("click", lessonEnter);
 document.addEventListener("keydown", (e) => {
   if (e.target.closest && e.target.closest("input")) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
@@ -3319,7 +3364,7 @@ let paintColor;
 function initControls() {
   paintColor = segInit("#colorSeg", pendingColor, (v) => {
     pendingColor = v;
-    if (online) return;
+    if (online || lesson) return;
     const fresh = game.history().length <= (playerColor === "b" ? 1 : 0) || game.game_over();
     if (v === playerColor) { $("#colorNote").hidden = true; return; }
     if (fresh && !busy) newGame(); else $("#colorNote").hidden = false;
@@ -3874,6 +3919,670 @@ const confirmResign = { armed: false };
 })();
 setTimeout(() => { if (roomState === "wait") { roomState = "off"; renderOnline(); } }, 12000);
 
+// ---------- lesson: Scholar's mate (детский мат) ----------
+// Each variation is a tree. Mentor nodes ({san, say, short, arrows, marks, next}) are played by the mentor;
+// student nodes ({good, alt, bad, hint, target}) wait for the student. good[san] = {say, next?} moves the
+// line on (no next = variation passed); alt[san] = text, a playable move that is not the one being drilled
+// (taken back, no penalty); bad[san] = {reply, say}, the mentor punishes it. Unlisted moves are judged
+// on the board: a mate in one or a big Stockfish loss is punished, anything else is taken back.
+const LESSON_PASSES = 3;
+const LESSON = [
+  {
+    id: "classic", side: "b", title: "Классика: Сc4 и Фh5",
+    pre: ["e4", "e5", "Bc4", "Nc6"],
+    intro: "Ты играешь чёрными. Белые вывели слона на c4: он смотрит на f7. Поле f7 — самое слабое у чёрных, его защищает только король. Следи, что будет делать ферзь.",
+    next: {
+      san: "Qh5", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+      say: "Ферзь прыгнул на h5. Теперь на f7 нацелены сразу две фигуры — ферзь и слон, а защищает его только король. Угроза: Фxf7 — мат. Как защитишься?",
+      short: "Фh5: ферзь и слон снова смотрят на f7. Защищайся.",
+      next: {
+        target: "f7",
+        hint: "Нужен ход, который встанет между ферзём h5 и полем f7. Лучше, если он ещё и нападёт на ферзя. Посмотри на пешки королевского фланга.",
+        good: {
+          g6: {
+            say: "Отлично! Пешка g6 перекрыла ферзю дорогу на f7 и сама напала на него. Ферзю придётся уйти, а белые потеряют время.",
+            next: {
+              san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "Ферзь отступил на f3, но не сдался: по линии f он снова бьёт в f7, и слон c4 ему помогает. Опять угроза Фxf7 — мат! Это главная хитрость детского мата — второй заход.",
+              short: "Фf3: второй заход на f7. Что теперь?",
+              next: {
+                target: "f7",
+                hint: "Перекрой линию f фигурой, которую всё равно нужно развивать.",
+                good: {
+                  Nf6: {
+                    say: "Правильно! Конь f6 закрыл линию f и вышел в игру. Мата нет, а белый ферзь стоит на поле, которое нужно коню g1. Дальше спокойно играй Сg7 и 0-0 — у чёрных отличная позиция."
+                  }
+                },
+                alt: {
+                  Qf6: "Фf6 тоже закрывает f7, но ферзь занял поле коня, и после Фxf6 Кxf6 ничего не выиграно. Найди ход, который защищает и развивает фигуру.",
+                  Qe7: "Фe7 защищает f7, но ферзь мешает слону f8. Лучше защититься развитием лёгкой фигуры."
+                },
+                bad: {
+                  Bg7: { reply: "Qxf7#", say: "Сg7 — хороший ход вообще, но сейчас он не защищает f7. Фxf7 — мат. Сначала угроза, потом развитие!" },
+                  d6: { reply: "Qxf7#", say: "d6 открывает слона c8, но f7 остался под ударом. Фxf7 — мат." }
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          Qe7: "Фe7 тоже защищает и f7, и e5 — это рабочий ход, его мы разберём в варианте со слоном c5. Но здесь сильнее защита с нападением на ферзя. Найди её.",
+          Qf6: "Фf6 защищает f7, но ферзь занимает поле коня. Есть ход лучше: перекрой ферзя и сразу прогони его."
+        },
+        bad: {
+          Nf6: { reply: "Qxf7#", say: "Вот так и попадаются на детский мат! Конь f6 нападает на ферзя, но f7 остался беззащитным: Фxf7 — мат. Сначала защищай f7." },
+          Bc5: { reply: "Qxf7#", say: "Слон c5 развивается, но не защищает f7: Фxf7 — мат. Сначала нужно отбить угрозу." }
+        }
+      }
+    }
+  },
+  {
+    id: "early-h5", side: "b", title: "Ранний ферзь: 2.Фh5",
+    pre: ["e4", "e5"],
+    intro: "Другой порядок ходов: белые выводят ферзя уже на втором ходу, а слона — потом. Задача та же — не дать поставить мат на f7.",
+    next: {
+      san: "Qh5", arrows: [["h5", "e5", "t"]], marks: ["e5"],
+      say: "Ферзь на h5 сразу нападает на пешку e5. Слона на c4 пока нет, так что мата не будет, но пешку надо защитить. Каким ходом?",
+      short: "Фh5 нападает на e5. Защити пешку.",
+      next: {
+        target: "e5",
+        hint: "Защити e5 фигурой, которую в дебюте всё равно надо развивать.",
+        good: {
+          Nc6: {
+            say: "Верно: конь c6 защищает e5 и развивается.",
+            next: {
+              san: "Bc4", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "А вот и слон на c4. Позиция та же, что в классическом варианте: ферзь и слон бьют в f7. Угроза Фxf7 — мат.",
+              short: "Сc4: угроза Фxf7 мат.",
+              next: {
+                target: "f7",
+                hint: "Пешка может и перекрыть ферзя, и напасть на него.",
+                good: {
+                  g6: {
+                    say: "Точно! g6 закрывает f7 и гонит ферзя.",
+                    next: {
+                      san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+                      say: "Ферзь возвращается на f3 — второй заход на f7.",
+                      short: "Фf3: снова на f7.",
+                      next: {
+                        target: "f7",
+                        hint: "Закрой линию f конём.",
+                        good: { Nf6: { say: "Отлично, ты отбил обе атаки. Белый ферзь вышел рано и только потерял время." } },
+                        alt: {
+                          Qf6: "Фf6 защищает, но занимает поле коня. Есть развивающий ход.",
+                          Qe7: "Защищает, но ферзь запирает слона f8. Развей коня."
+                        },
+                        bad: { Bg7: { reply: "Qxf7#", say: "Сначала угроза! Сg7 не защищает f7: Фxf7 — мат." } }
+                      }
+                    }
+                  }
+                },
+                alt: {
+                  Qe7: "Фe7 защищает f7, это можно. Но сильнее ход с нападением на ферзя.",
+                  Qf6: "Фf6 закрывает f7, но ферзь занимает поле коня. Найди ход пешкой."
+                },
+                bad: {
+                  Nf6: { reply: "Qxf7#", say: "Конь напал на ферзя, но f7 не защищён: Фxf7 — мат." }
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          d6: "d6 защищает e5, но запирает слона f8. Лучше защитить пешку развитием коня.",
+          Qe7: "Ферзь защищает, но выходить им так рано незачем. Защити e5 конём.",
+          Qf6: "Ферзь защищает e5, но рано выходит и занимает поле коня. Защити пешку конём."
+        },
+        bad: {
+          Nf6: { reply: "Qxe5+", say: "Кf6 нападает на ферзя, но пешка e5 падает с шахом: Фxe5+. Сначала защити e5." },
+          g6: { reply: "Qxe5+", say: "g6?? — ферзь берёт e5 с шахом и одновременно нападает на ладью h8. Вилка! Сначала защити пешку." }
+        }
+      }
+    }
+  },
+  {
+    id: "f3", side: "b", title: "Ферзь на f3",
+    pre: ["e4", "e5", "Bc4", "Nc6"],
+    intro: "Ферзь может идти не на h5, а на f3. Там он спокойнее, но цель та же — пешка f7.",
+    next: {
+      san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+      say: "Фf3: ферзь бьёт по линии f, слон c4 — по диагонали. Угроза Фxf7 — мат. Чем защититься?",
+      short: "Фf3. Угроза на f7.",
+      next: {
+        target: "f7",
+        hint: "Закрой линию f, заодно развив фигуру.",
+        good: {
+          Nf6: {
+            say: "Правильно! Конь f6 перекрыл линию f. Против ферзя на f3 это лучший ответ.",
+            next: {
+              san: "Qb3", arrows: [["b3", "f7", "t"]], marks: ["f7"],
+              say: "Хитрый ход: ферзь перешёл на b3 и встал за слоном. Вдвоём они снова бьют f7 — угроза Сxf7+. Не мат, но пешку с шахом терять обидно. Защити f7 или напади на ферзя.",
+              short: "Фb3: ферзь со слоном снова на f7.",
+              next: {
+                target: "f7",
+                hint: "Конь c6 может прыгнуть на поле, где нападёт на ферзя. Или защити f7 ферзём.",
+                good: {
+                  Nd4: { say: "Отлично! Кd4 нападает на ферзя и на пешку c2. Белые опять тратят ход, а у чёрных отличная игра." },
+                  Qe7: { say: "Хорошо: ферзь e7 надёжно защищает f7. Дальше развивайся: Сc5, 0-0." }
+                },
+                alt: {
+                  Na5: "Кa5 нападает и на ферзя, и на слона — неплохо, но конь на краю доски стоит плохо. Найди прыжок в центр."
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          Qf6: "Фf6 тоже закрывает f7, но после Фxf6 Кxf6 ферзи разменяются, и белые ничего не потеряли. Лучше закрыть линию конём.",
+          Qe7: "Фe7 защищает f7, но ферзь мешает слону. Найди развивающий ход."
+        },
+        bad: {
+          Bc5: { reply: "Qxf7#", say: "Сc5 развивает слона, но f7 не защищён: Фxf7 — мат." },
+          d6: { reply: "Qxf7#", say: "d6 не помогает f7: Фxf7 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "bc5", side: "b", title: "Двойная угроза: Сc5 и Фh5",
+    pre: ["e4", "e5", "Bc4", "Bc5"],
+    intro: "Чёрные сыграли Сc5, и пешку e5 теперь не защищает конь. Значит, ферзь на h5 создаст сразу две угрозы.",
+    next: {
+      san: "Qh5", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"], ["h5", "e5", "t"]], marks: ["f7", "e5"],
+      say: "Фh5 — две угрозы: Фxf7 мат и Фxe5+ с шахом, после которого ферзь нападёт и на ладью h8, и на слона c5. Нужен один ход, который защищает сразу оба поля.",
+      short: "Фh5: две угрозы, f7 и e5.",
+      next: {
+        target: "f7",
+        hint: "Только одна фигура может одним ходом встать рядом и с f7, и с e5. Это ферзь.",
+        good: {
+          Qe7: {
+            say: "Точно! Ферзь e7 защищает и f7, и e5. Обе угрозы отбиты.",
+            next: {
+              san: "Nf3", arrows: [["f3", "e5", "t"]], marks: ["e5"],
+              say: "Белые подтягивают коня: теперь на e5 нападают и конь, и ферзь. Но пешку защищает твой ферзь. Можно развиваться — а лучше развиваться с нападением на ферзя.",
+              short: "Кf3. Развивайся с темпом.",
+              next: {
+                target: "e5",
+                hint: "Какая фигура выходит в игру и сразу нападает на ферзя h5?",
+                good: {
+                  Nf6: { say: "Отлично! Конь f6 развивается и гонит ферзя. Он ничего не добился и уходит, а ты выиграл время." }
+                },
+                alt: {
+                  Nc6: "Кc6 — хорошее развитие и защищает e5. Но есть ход ещё сильнее: развитие с нападением на ферзя.",
+                  d6: "d6 надёжно защищает e5, но можно сыграть активнее — с нападением на ферзя."
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          Qf6: "Фf6 тоже защищает обе точки, но ферзь занимает поле коня. Есть поле для ферзя удобнее."
+        },
+        bad: {
+          g6: { reply: "Qxe5+", say: "g6 спасает от мата, но Фxe5+ — шах, и следом ферзь возьмёт ладью h8 или слона c5. Здесь нужно защищать сразу два поля." },
+          Nf6: { reply: "Qxf7#", say: "Кf6 нападает на ферзя, но не защищает f7: Фxf7 — мат." },
+          Nc6: { reply: "Qxf7#", say: "Кc6 защитил e5, но про f7 ты забыл: Фxf7 — мат." },
+          d6: { reply: "Qxf7#", say: "d6 защищает e5, но f7 остался без защиты: Фxf7 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "d6", side: "b", title: "После d6: снова Фh5",
+    pre: ["e4", "e5", "Bc4", "d6"],
+    intro: "Чёрные защитили e5 пешкой d6. Кажется, всё спокойно, но слабость f7 никуда не делась.",
+    next: {
+      san: "Qh5", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+      say: "Фh5 — и снова угроза Фxf7 мат. Пешка d6 тут не помогает. Найди защиту.",
+      short: "Фh5. Угроза на f7.",
+      next: {
+        target: "f7",
+        hint: "Как и в классике: пешкой перекрой ферзя и напади на него. Или защити f7 ферзём.",
+        good: {
+          g6: {
+            say: "Верно, g6 закрывает f7 и гонит ферзя.",
+            next: {
+              san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "Второй заход: Фf3 и снова угроза на f7.",
+              short: "Фf3: снова на f7.",
+              next: {
+                target: "f7",
+                hint: "Конь закрывает линию f.",
+                good: { Nf6: { say: "Правильно! Обе атаки отбиты, а белый ферзь стоит не на своём месте." } },
+                alt: {
+                  Qe7: "Фe7 защищает, но лучше развить коня.",
+                  Qf6: "Ферзь занимает поле коня. Развей коня."
+                },
+                bad: { Bg7: { reply: "Qxf7#", say: "Сg7 не защищает f7: Фxf7 — мат." } }
+              }
+            }
+          },
+          Qe7: { say: "Хорошо: ферзь e7 защищает f7. Позже вытеснишь ферзя ходом Кf6." },
+          Qd7: { say: "Можно и так: ферзь d7 защищает f7 по седьмой горизонтали. Правда, он запирает слона c8, так что позже его лучше переставить." }
+        },
+        alt: {
+          Qf6: "Фf6 защищает f7, но занимает поле коня. Есть ход лучше.",
+          Be6: "Сe6 перекрывает слона c4, но после Сxe6 fxe6 у чёрных сдвоенные пешки и открытый король. Защитись надёжнее."
+        },
+        bad: {
+          Nf6: { reply: "Qxf7#", say: "Классическая ловушка: Кf6 нападает на ферзя, но Фxf7 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "early-f3", side: "b", title: "Ранний ферзь: 2.Фf3",
+    pre: ["e4", "e5"],
+    intro: "Белые выводят ферзя на f3 сразу, а слона хотят поставить на c4 следующим ходом.",
+    next: {
+      san: "Qf3", arrows: [["f3", "f7", "t"]], marks: ["f7"],
+      say: "Ферзь на f3 уже смотрит на f7. Мата пока нет, но после Сc4 он будет. Лучше решить проблему заранее. Каким ходом?",
+      short: "Фf3. Подумай про f7 заранее.",
+      next: {
+        target: "f7",
+        hint: "Закрой линию f конём — это и развитие, и защита.",
+        good: {
+          Nf6: {
+            say: "Отлично! Конь f6 сразу закрыл линию f. Теперь Сc4 мата не создаёт.",
+            next: {
+              san: "Bc4", arrows: [["c4", "f7", "t"]], marks: ["f7"],
+              say: "Слон c4 — но ферзь закрыт конём, так что f7 защищён королём. Спокойно развивайся: какой ход выведет фигуру и не даст белым никаких шансов?",
+              short: "Сc4. Развивайся.",
+              next: {
+                target: "f7",
+                hint: "Выведи коня b8 или слона f8. Например, конь на c6 защищает e5.",
+                good: {
+                  Nc6: { say: "Хорошо: конь c6 развит и защищает e5. Белым здесь нечем атаковать." },
+                  Bc5: { say: "Хорошо: слон c5 развит и смотрит на f2, скоро 0-0." },
+                  Be7: { say: "Скромно, но надёжно: слон e7 развит, скоро 0-0." }
+                }
+              }
+            }
+          },
+          Nc6: {
+            say: "Хорошее развитие, но f7 пока не прикрыт. Белые сыграют Сc4 — придётся защищаться.",
+            next: {
+              san: "Bc4", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "Вот и Сc4: угроза Фxf7 мат. Закрой линию f.",
+              short: "Сc4: угроза Фxf7 мат.",
+              next: {
+                target: "f7",
+                hint: "Конь g8 на f6.",
+                good: { Nf6: { say: "Правильно! Линия f закрыта, мата нет." } },
+                alt: { Qf6: "Фf6 тоже закрывает, но лучше развить коня.", Qe7: "Защищает, но лучше развить коня." },
+                bad: { Bc5: { reply: "Qxf7#", say: "Сc5 не защищает f7: Фxf7 — мат." } }
+              }
+            }
+          }
+        },
+        alt: {
+          Qf6: "Ферзи разменяются — это не страшно, но ферзь на f6 занимает поле коня. Есть ход лучше.",
+          d6: "d6 сейчас не нужен: подумай, как закрыть линию f."
+        }
+      }
+    }
+  },
+  {
+    id: "w-h4", side: "w", title: "За белых: Фh4 и мат на f2",
+    pre: ["e4", "e5", "Bc4", "Bc5", "Nc3"],
+    intro: "Теперь ты играешь белыми, а детский мат пробуют поставить тебе. У белых слабое поле — f2. Чёрный слон c5 уже смотрит на него.",
+    next: {
+      san: "Qh4", arrows: [["h4", "f2", "t"], ["c5", "f2", "t"]], marks: ["f2"],
+      say: "Чёрный ферзь вышел на h4. Ферзь и слон c5 бьют f2: угроза Фxf2 — мат. Ещё ферзь нападает на e4, но её защищает конь c3. Как защитишь f2?",
+      short: "Фh4: угроза Фxf2 мат.",
+      next: {
+        target: "f2",
+        hint: "Можно перекрыть диагональ h4–f2 пешкой и заодно напасть на ферзя. Или защитить f2 ферзём.",
+        good: {
+          g3: {
+            say: "Отлично! g3 закрывает диагональ и гонит ферзя.",
+            next: {
+              san: "Qf6", arrows: [["f6", "f2", "t"], ["c5", "f2", "t"]], marks: ["f2"],
+              say: "Ферзь перешёл на f6 и по линии f снова бьёт в f2 — опять угроза Фxf2 мат! Знакомый второй заход.",
+              short: "Фf6: снова на f2.",
+              next: {
+                target: "f2",
+                hint: "Закрой линию f конём g1.",
+                good: {
+                  Nf3: { say: "Правильно! Конь f3 закрыл линию f и развился. Мата нет." },
+                  Qe2: { say: "Хорошо: ферзь e2 защищает f2. Дальше развивай коня g1." },
+                  Qf3: { say: "Тоже защита: предлагаешь размен ферзей. Это надёжно." }
+                },
+                bad: {
+                  d3: { reply: "Qxf2#", say: "d3 открывает слона, но f2 не защищён: Фxf2 — мат." }
+                }
+              }
+            }
+          },
+          Qe2: { say: "Хорошо: ферзь e2 защищает и f2, и e4. Дальше развивай коня g1 на f3 с нападением на ферзя." }
+        },
+        alt: {
+          Qf3: "Фf3 защищает f2, но ферзь займёт поле коня g1. Есть ход лучше.",
+          Nh3: "Кh3 защищает f2, но конь на краю стоит плохо. Найди лучшую защиту.",
+          Qe2: "Фe2 защищает f2 и e4. Но здесь ещё сильнее — прогнать ферзя пешкой."
+        },
+        bad: {
+          Nf3: { reply: "Qxf2#", say: "Ловушка! Кf3 нападает на ферзя, но не закрывает диагональ h4–f2: Фxf2 — мат." },
+          d3: { reply: "Qxf2#", say: "d3 не защищает f2: Фxf2 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "w-f6", side: "w", title: "За белых: Фf6 и мат на f2",
+    pre: ["e4", "e5", "Bc4", "Bc5", "d3"],
+    intro: "Снова играешь белыми. Чёрные выводят ферзя на f6 — оттуда он бьёт по линии f.",
+    next: {
+      san: "Qf6", arrows: [["f6", "f2", "t"], ["c5", "f2", "t"]], marks: ["f2"],
+      say: "Ферзь f6 и слон c5 нацелены на f2: угроза Фxf2 мат. Защитись.",
+      short: "Фf6: угроза Фxf2 мат.",
+      next: {
+        target: "f2",
+        hint: "Закрой линию f фигурой, которую всё равно надо развивать.",
+        good: {
+          Nf3: { say: "Правильно! Конь f3 закрыл линию f и развился. Теперь у белых хорошая игра." },
+          Qe2: { say: "Хорошо: ферзь e2 защищает f2. Следом развей коня g1." },
+          Qf3: { say: "Надёжно: предлагаешь размен ферзей, и атака чёрных пропадает." }
+        },
+        alt: {
+          Be3: "Сe3 закрывает слона c5 и защищает f2 — можно. Но проще закрыть линию f конём.",
+          Nh3: "Кh3 защищает f2, но конь на краю. Найди лучшее поле для коня."
+        },
+        bad: {
+          Nc3: { reply: "Qxf2#", say: "Кc3 развивает коня, но не тот: f2 без защиты, Фxf2 — мат." },
+          Bg5: { reply: "Qxf2#", say: "Сg5 нападает на ферзя, но f2 остался под ударом: Фxf2 — мат." }
+        }
+      }
+    }
+  }
+];
+
+const LESSON_KEY = "smart-chess-lesson-v1";
+let lessonProgress = { done: {}, exam: false };
+try { const p = JSON.parse(localStorage.getItem(LESSON_KEY) || "null"); if (p && p.done) lessonProgress = { done: p.done, exam: !!p.exam }; } catch (_) {}
+function saveLessonProgress() { try { localStorage.setItem(LESSON_KEY, JSON.stringify(lessonProgress)); } catch (_) {} }
+const lessonDone = (id) => Math.min(LESSON_PASSES, lessonProgress.done[id] || 0);
+const lessonAllDone = () => LESSON.every((v) => lessonDone(v.id) >= LESSON_PASSES);
+const lsSleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const lsAlive = (t) => lesson && lesson.token === t;
+const mainMove = (node) => Object.keys(node.good)[0];
+
+function lessonSay(text, cls, color) {
+  const box = $("#lsLog");
+  box.querySelectorAll(".ls-msg.now").forEach((el) => el.classList.remove("now"));
+  const p = document.createElement("p");
+  p.className = "ls-msg now " + (cls || "");
+  setRich(p, text, color);
+  box.appendChild(p);
+  while (box.children.length > 6) box.firstChild.remove();
+  box.scrollTop = box.scrollHeight;
+  return p;
+}
+function lessonButtons(list) {
+  const row = $("#lsTools"); row.innerHTML = "";
+  list.forEach(([text, cls, fn, id]) => { const b = btnEl(text, cls, fn); if (id) b.id = id; row.append(b); });
+}
+function lessonPlayTools() {
+  const tools = [];
+  if (!lesson.exam) tools.push(["Подсказка", "", lessonHint, "lsHint"]);
+  tools.push(["Начать вариант заново", "", () => lessonStart(lesson.v, true)], ["К списку вариантов", "", lessonMenu]);
+  lessonButtons(tools);
+  const h = $("#lsHint"); if (h) h.disabled = !lesson.await;
+}
+function lessonHeader() {
+  const v = lesson && lesson.v;
+  $("#lsTitle").textContent = v ? v.title : "Защита от детского мата";
+  let sub = "";
+  if (v && lesson.exam) sub = `Экзамен: осталось ${lesson.queue.length + 1} из ${LESSON.length}. Без подсказок.`;
+  else if (v) sub = lesson.guided ? `Повтор 1 из ${LESSON_PASSES}: с объяснением` : `Повтор ${Math.min(LESSON_PASSES, lessonDone(v.id) + 1)} из ${LESSON_PASSES}: сам, без стрелок`;
+  $("#lsSub").textContent = sub;
+  $("#lsSub").hidden = !sub;
+}
+function lessonMenu() {
+  lesson.token++; lesson.v = null; lesson.node = null; lesson.await = false; lesson.retry = false; lesson.arrows = []; lesson.marks = [];
+  lesson.exam = false;
+  lessonHeader();
+  $("#lsLog").innerHTML = "";
+  const list = $("#lsList"); list.innerHTML = ""; list.hidden = false;
+  LESSON.forEach((v, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "ls-item";
+    const n = lessonDone(v.id);
+    b.innerHTML = `<span class="ls-n">${i + 1}</span><span class="ls-t"></span><span class="ls-dots" aria-label="пройдено ${n} из ${LESSON_PASSES}">${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(LESSON_PASSES - n)}</span>`;
+    setRich(b.querySelector(".ls-t"), v.title + (v.side === "w" ? " · белыми" : " · чёрными"), v.side === "w" ? "b" : "w");
+    b.addEventListener("click", () => lessonStart(v));
+    list.appendChild(b);
+  });
+  const total = LESSON.reduce((s, v) => s + lessonDone(v.id), 0);
+  const all = LESSON.length * LESSON_PASSES;
+  lessonSay(total === 0
+    ? `Детский мат — это быстрый мат на 3–4 ходу: ферзь и слон вместе бьют по слабому полю f7 (или f2, если ты играешь белыми). Мы разберём ${LESSON.length} вариантов. Каждый пройдём ${LESSON_PASSES} раза: первый — с моими объяснениями и стрелками, потом сам. В конце экзамен вперемешку.`
+    : lessonProgress.exam ? "Урок пройден, и экзамен сдан! Можно повторить любой вариант или сдать экзамен ещё раз."
+    : `Пройдено ${total} из ${all} повторов. Продолжим?`);
+  const nextV = LESSON.find((v) => lessonDone(v.id) < LESSON_PASSES);
+  const tools = [];
+  if (nextV) tools.push([total ? "Продолжить" : "Начать урок", "primary", () => lessonStart(nextV)]);
+  tools.push(["Экзамен", nextV ? "" : "primary", lessonExam]);
+  if (total) tools.push(["Сбросить прогресс", "", () => { lessonProgress = { done: {}, exam: false }; saveLessonProgress(); lessonMenu(); }]);
+  tools.push(["Выйти из урока", "", lessonExit]);
+  lessonButtons(tools);
+  game.reset(); lastMove = null; playerColor = "b"; flipped = true; crack = null;
+  setEval({ cp: 0, mate: null });
+  render(); renderMoves(); refreshStatus();
+}
+function lessonEnter() {
+  if (lesson) return;
+  if (online) return;
+  if (!$("#sidePick").hidden && sidePickCancel) sidePickCancel();
+  gen++; engine.stop(); busy = false;
+  lesson = {
+    token: 0, stash: { pgn: game.pgn(), playerColor, flipped, verdicts, lastMove },
+    v: null, node: null, await: false, arrows: [], marks: [], exam: false, queue: []
+  };
+  selected = null; targets = new Set(); arrow = null; verdicts = {};
+  document.body.classList.add("in-lesson");
+  $("#lessonPanel").hidden = false;
+  lessonMenu();
+  $("#lessonPanel").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+function lessonExit() {
+  if (!lesson) return;
+  const s = lesson.stash;
+  lesson.token++; lesson = null;
+  document.body.classList.remove("in-lesson");
+  $("#lessonPanel").hidden = true;
+  gen++; cache.clear();
+  game.reset(); if (s.pgn) game.load_pgn(s.pgn);
+  playerColor = s.playerColor; flipped = s.flipped; verdicts = s.verdicts; lastMove = s.lastMove;
+  selected = null; targets = new Set(); arrow = null;
+  render(); renderMoves(); refreshStatus();
+  if (!engineReady || game.game_over()) return;
+  if (game.turn() !== playerColor) engineOpens(); else analyze(game.fen());
+}
+function lessonExam() {
+  const ids = LESSON.map((v) => v.id);
+  for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+  lesson.exam = true;
+  lesson.queue = ids.slice(1);
+  lessonStart(LESSON.find((v) => v.id === ids[0]), true);
+}
+// Plays one move by the lesson script (pre-moves, mentor moves, punishments).
+function lessonPlay(san) {
+  const mv = game.move(san);
+  if (!mv) return null;
+  lastMove = { from: mv.from, to: mv.to };
+  render(); animateMove(mv); playSound(mv); crackKing(); renderMoves();
+  if (engineReady && !game.game_over()) analyze(game.fen()).catch(() => {}); else if (game.game_over()) setEval(terminalEval().score);
+  return mv;
+}
+async function lessonStart(v, examStart) {
+  if (!lesson) return;
+  if (!examStart) lesson.exam = false;
+  const t = ++lesson.token;
+  Object.assign(lesson, { v, node: null, await: false, retry: false, dirty: false, hints: 0, tries: 0, arrows: [], marks: [] });
+  lesson.guided = !lesson.exam && lessonDone(v.id) === 0;
+  $("#lsList").hidden = true;
+  $("#lsLog").innerHTML = "";
+  lessonHeader();
+  playerColor = v.side; flipped = v.side === "b";
+  game.reset(); lastMove = null; selected = null; targets = new Set(); arrow = null; crack = null;
+  setEval({ cp: 0, mate: null });
+  render(); renderMoves(); refreshStatus();
+  lessonPlayTools();
+  if (lesson.exam) lessonSay(`Экзамен. ${v.side === "w" ? "Ты играешь белыми." : "Ты играешь чёрными."} Не дай поставить мат.`);
+  else lessonSay(lesson.guided ? v.intro : `${v.side === "w" ? "Ты играешь белыми." : "Ты играешь чёрными."} Вспомни, как защищаться, — теперь без стрелок.`);
+  await lsSleep(lesson.guided ? 900 : 400);
+  for (const san of v.pre) {
+    if (!lsAlive(t)) return;
+    lessonPlay(san);
+    await lsSleep(420);
+  }
+  if (!lsAlive(t)) return;
+  lessonMentor(v.next, t);
+}
+async function lessonMentor(node, t) {
+  lesson.await = false; refreshStatus();
+  await lsSleep(500);
+  if (!lsAlive(t)) return;
+  const mv = lessonPlay(node.san);
+  if (!mv) return;
+  const show = lesson.guided;
+  lesson.arrows = show ? (node.arrows || []).map(([from, to, tone]) => ({ from, to, tone })) : [];
+  lesson.marks = show ? node.marks || [] : [];
+  lesson.mentorArrows = lesson.arrows;
+  lessonSay(show ? node.say : (node.short || `${ru(mv.san)}. Твой ход.`), "", mv.color);
+  lesson.node = node.next; lesson.ply = game.history().length; lesson.tries = 0;
+  lesson.await = true;
+  lessonPlayTools();
+  render(); refreshStatus();
+}
+function lessonHint() {
+  if (!lesson || !lesson.await || !lesson.node) return;
+  const node = lesson.node;
+  lesson.hints++;
+  if (!lesson.guided) lesson.dirty = true;
+  if (lesson.hints === 1 && node.hint) { lessonSay("Подсказка: " + node.hint, "hint"); return; }
+  const m = game.move(mainMove(node)); if (!m) return;
+  game.undo();
+  lesson.arrows = [{ from: m.from, to: m.to, tone: "h" }];
+  lessonSay(`Стрелка на доске показывает ход ${ru(m.san)}.`, "hint", m.color);
+  render();
+}
+function mateInOne() {
+  for (const m of game.moves({ verbose: true })) { game.move(m); const x = game.in_checkmate(); game.undo(); if (x) return m.san; }
+  return null;
+}
+// Back to the position where the student has to find the move.
+function lessonRetry(t) {
+  if (!lsAlive(t)) return;
+  while (game.history().length > lesson.ply) game.undo();
+  const h = game.history({ verbose: true }), last = h[h.length - 1];
+  lastMove = last ? { from: last.from, to: last.to } : null; crack = null;
+  lesson.await = true; lesson.retry = false;
+  lesson.arrows = lesson.guided ? (lesson.mentorArrows || []) : [];
+  lessonPlayTools();
+  render(); renderMoves(); refreshStatus();
+  if (engineReady) analyze(game.fen()).catch(() => {});
+}
+async function lessonPunish(t, reply, text, color) {
+  lesson.dirty = true; lesson.tries++; lesson.retry = true;
+  await lsSleep(550);
+  if (!lsAlive(t)) return;
+  lessonPlay(reply);
+  lessonSay(text, "bad", color);
+  if (lesson.tries >= 2 && !lesson.exam && lesson.node.hint) lessonSay("Подсказка: " + lesson.node.hint, "hint");
+  lessonButtons([["Попробовать ещё раз", "primary", () => lessonRetry(t)], ["К списку вариантов", "", lessonMenu]]);
+  refreshStatus();
+}
+async function lessonMove(from, to, promotion, anim) {
+  const t = lesson.token, node = lesson.node, fenBefore = game.fen();
+  const mv = game.move({ from, to, promotion });
+  if (!mv) return deselect();
+  selected = null; targets = new Set(); lastMove = { from, to };
+  lesson.arrows = []; lesson.await = false;
+  const h = $("#lsHint"); if (h) h.disabled = true;
+  render(); if (anim) animateMove(mv); playSound(mv); renderMoves(); refreshStatus();
+  const san = mv.san, opp = mv.color === "w" ? "b" : "w";
+  if (node.good[san]) {
+    const g = node.good[san];
+    lessonSay(g.say, "good", mv.color);
+    if (engineReady) analyze(game.fen()).catch(() => {});
+    if (g.next) return lessonMentor(g.next, t);
+    return lessonPassed(t);
+  }
+  if (node.alt && node.alt[san]) {
+    lessonSay(node.alt[san], "alt", mv.color);
+    await lsSleep(1800);
+    return lessonRetry(t);
+  }
+  if (node.bad && node.bad[san]) return lessonPunish(t, node.bad[san].reply, node.bad[san].say, opp);
+  const mate = mateInOne();
+  if (mate) {
+    const where = node.target || (mv.color === "w" ? "f2" : "f7");
+    return lessonPunish(t, mate, `${ru(san)} не спасает: ${ru(mate).replace("#", "")} — мат. Нужно защитить поле ${where} или перекрыть дорогу к нему.`, opp);
+  }
+  if (engineReady) {
+    lessonSay("Мата нет. Проверяю ход движком…", "wait");
+    try {
+      const before = await analyze(fenBefore), after = await analyze(game.fen());
+      if (!lsAlive(t)) return;
+      const P = mv.color === "w" ? 1 : -1;
+      const loss = (scoreNum(before.score) - scoreNum(after.score)) * P;
+      $("#lsLog").lastChild && $("#lsLog").lastChild.classList.contains("wait") && $("#lsLog").lastChild.remove();
+      if (loss >= 150 && after.bestmove) {
+        const reply = game.move(uciObj(after.bestmove)); game.undo();
+        if (reply) return lessonPunish(t, reply.san, `Мата нет, но после ${ru(reply.san)} ты теряешь материал (оценка ${fmtScore(after.score)}). Найди ход, который защищает и ничего не отдаёт.`, opp);
+      }
+    } catch (_) { if (!lsAlive(t)) return; }
+  }
+  lessonSay(`${ru(san)} — мата нет, так играть можно. Но в этом упражнении есть ход сильнее. Попробуй найти его.`, "alt", mv.color);
+  await lsSleep(1800);
+  lessonRetry(t);
+}
+function lessonPassed(t) {
+  const v = lesson.v;
+  lesson.await = false; lesson.node = null; lesson.arrows = []; lesson.marks = [];
+  render(); refreshStatus();
+  const clean = !lesson.dirty;
+  let note;
+  if (lesson.exam) {
+    if (!clean) lesson.queue.push(v.id);
+    note = clean ? "Вариант сдан." : "С ошибкой — этот вариант ещё вернётся в конце экзамена.";
+  } else if (clean) {
+    lessonProgress.done[v.id] = lessonDone(v.id) + 1; saveLessonProgress();
+    const n = lessonDone(v.id);
+    note = n >= LESSON_PASSES ? `Вариант выучен: ${n} из ${LESSON_PASSES}!` : `Засчитано: ${n} из ${LESSON_PASSES}.`;
+  } else note = lesson.hints && !lesson.guided && !lesson.tries ? "С подсказкой повтор не засчитан — давай ещё раз сам." : "Были ошибки, поэтому повтор не засчитан. Давай ещё раз.";
+  lessonSay(note, clean ? "good" : "alt");
+  lessonHeader();
+  let next = null, label = "Дальше";
+  if (lesson.exam) {
+    const id = lesson.queue.shift();
+    if (id) next = () => lessonStart(LESSON.find((x) => x.id === id), true);
+    else {
+      lessonProgress.exam = true; saveLessonProgress();
+      lessonSay("Экзамен сдан! Ты знаешь все варианты детского мата и умеешь от них защищаться. Теперь его не боишься — играй смело.", "good");
+      playClip("notify");
+      lessonButtons([["К списку вариантов", "primary", lessonMenu], ["Выйти из урока", "", lessonExit]]);
+      return;
+    }
+  } else if (lessonDone(v.id) < LESSON_PASSES) { next = () => lessonStart(v, true); label = "Повторить ещё раз"; }
+  else {
+    const nv = LESSON.find((x) => lessonDone(x.id) < LESSON_PASSES);
+    if (nv) { next = () => lessonStart(nv, true); label = "Следующий вариант"; }
+    else { next = lessonExam; label = "К экзамену"; lessonSay("Все варианты пройдены по " + LESSON_PASSES + " раза. Осталось сдать экзамен: варианты вперемешку, без подсказок.", "good"); }
+  }
+  lessonButtons([[label, "primary", next], ["К списку вариантов", "", lessonMenu]]);
+}
+function lessonStatus() {
+  const el = $("#status");
+  if (!lesson.v) return setStatus("Урок: выберите вариант");
+  if (game.in_checkmate()) { setStatus("Мат. Попробуйте ещё раз."); el.classList.add("end"); return; }
+  if (lesson.retry) return setStatus("Ошибка. Нажмите «Попробовать ещё раз»");
+  if (lesson.await) return setStatus(`Ваш ход (${lesson.v.side === "w" ? "белые" : "чёрные"})${game.in_check() ? ". Шах!" : ""}`);
+  if (lesson.node === null && !lesson.await && game.history().length > lesson.v.pre.length) return setStatus("Вариант пройден");
+  setStatus("Наставник ходит", true);
+}
+
 // ---------- boot ----------
 function restore() {
   let s = null;
@@ -3910,7 +4619,7 @@ render(); renderMoves(); refreshStatus();
 if (!resumed && !(typeof linkInvite !== "undefined" && linkInvite)) {
   let hasOnline = false;
   try { hasOnline = !!localStorage.getItem(ONLINE_KEY); } catch (_) {}
-  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
+  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online || lesson || !c) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
 }
 
 engine.start().then(async (ok) => {
@@ -3921,6 +4630,7 @@ engine.start().then(async (ok) => {
   }
   engineReady = true; busy = false;
   updateStrips();
+  if (lesson) return refreshStatus();
   if (game.game_over()) { setEval(terminalEval().score); refreshStatus(); return; }
   if (online) { onlineEval(); return refreshStatus(); }
   if (game.turn() !== playerColor) engineOpens();
