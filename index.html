@@ -2498,6 +2498,29 @@ function animateMove(mv) {
   const pairs = [[mv.from, mv.to]], back = mv.color === "w" ? "1" : "8";
   if (mv.flags.includes("k")) pairs.push(["h" + back, "f" + back]);
   if (mv.flags.includes("q")) pairs.push(["a" + back, "d" + back]);
+  slidePieces(pairs);
+}
+// Undone moves (as game.undo() returned them, latest first) slide back to where they came from.
+// A piece taken back over several moves goes straight from where it stood to where it ends up.
+function takeBack(toLen) {
+  const out = [];
+  while (game.history().length > toLen) out.push(game.undo());
+  return out;
+}
+function animateBack(undone) {
+  if (reduceMotion || !undone || !undone.length) return;
+  const start = new Map();
+  const step = (a, z) => { const s0 = start.has(a) ? start.get(a) : a; start.delete(a); start.set(z, s0); };
+  for (const mv of undone) {
+    if (!mv) continue;
+    const back = mv.color === "w" ? "1" : "8";
+    step(mv.to, mv.from);
+    if (mv.flags.includes("k")) step("f" + back, "h" + back);
+    if (mv.flags.includes("q")) step("d" + back, "a" + back);
+  }
+  slidePieces([...start].filter(([z, a]) => a !== z).map(([z, a]) => [a, z]));
+}
+function slidePieces(pairs) {
   const s = boardEl.getBoundingClientRect().width / 8;
   for (const [a, z] of pairs) {
     const el = boardEl.querySelector(`.sq[data-sq="${z}"] .pc`);
@@ -3319,13 +3342,13 @@ function undo() {
   const n = undoCount();
   if (n <= 0 || !engineReady) return;
   if (busy) { engine.stop(); cache.clear(); busy = false; }
-  for (let i = 0; i < n; i++) game.undo();
+  const undone = takeBack(game.history().length - n);
   const len = game.history().length;
   Object.keys(verdicts).forEach((k) => { if (+k >= len) delete verdicts[k]; });
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
   selected = null; targets = new Set(); arrow = null; gen++;
-  render(); renderMoves(); save(); refreshStatus();
+  render(); animateBack(undone); renderMoves(); save(); refreshStatus();
   analyze(game.fen());
   feed.querySelectorAll(".card[data-ply]").forEach((el) => { if (+el.dataset.ply >= len) el.classList.add("undone"); });
 }
@@ -3535,11 +3558,11 @@ function takebackTarget() {
   return (t % 2 === 0 ? "w" : "b") === mine ? t : null;
 }
 function cutTo(len) {
-  while (game.history().length > len) game.undo();
+  const undone = takeBack(len);
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
   selected = null; targets = new Set(); crack = null;
-  render(); renderMoves(); updateStrips(); saveOnline(); onlineEval();
+  render(); animateBack(undone); renderMoves(); updateStrips(); saveOnline(); onlineEval();
 }
 function askTakeback() {
   if (!online || !online.live || online.over || game.game_over() || online.undoReq) return;
@@ -4594,13 +4617,13 @@ function lessonUndo() {
   if (!lesson || !lesson.v || lesson.passed) return;
   if (lesson.retry) return lessonRetry(lesson.token);
   if (!lesson.await) return; // the mentor is moving
-  let prev = null;
+  let prev = null, undone = [];
   if (!lesson.preWant && lesson.node) { lesson.stack.pop(); prev = lesson.stack[lesson.stack.length - 1] || null; }
   const t = ++lesson.token;
   if (lesson.preDone) lesson.preDone = null;
   lesson.preWant = null; lesson.retry = false; selected = null; targets = new Set();
   if (prev) {
-    while (game.history().length > prev.ply) game.undo();
+    undone = takeBack(prev.ply);
     Object.assign(lesson, { node: prev.node, ply: prev.ply, tries: 0, arrows: prev.arrows, marks: prev.marks, mentorArrows: prev.arrows, await: true });
     lesson.shown = new Set();
   } else {
@@ -4609,15 +4632,16 @@ function lessonUndo() {
     let idx = -1;
     for (let i = len - 1; i >= 0; i--) if (i % 2 === me) { idx = i; break; }
     if (idx < 0) return;
-    while (game.history().length > idx) game.undo();
+    undone = takeBack(idx);
     Object.assign(lesson, { node: null, arrows: [], marks: [], await: false, stack: [] });
   }
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null; crack = null;
   lessonSay("Ход отменён.", "alt");
-  lessonPlayTools(); render(); renderMoves(); refreshStatus();
+  lessonPlayTools();
+  if (prev) render(); else lessonRunPre(t); // the opening runner draws the board itself (its arrow included)
+  animateBack(undone); renderMoves(); refreshStatus();
   if (engineReady) analyze(game.fen()).catch(() => {});
-  if (!prev) lessonRunPre(t);
 }
 function mateInOne() {
   for (const m of game.moves({ verbose: true })) { game.move(m); const x = game.in_checkmate(); game.undo(); if (x) return m.san; }
@@ -4626,13 +4650,13 @@ function mateInOne() {
 // Back to the position where the student has to find the move.
 function lessonRetry(t) {
   if (!lsAlive(t)) return;
-  while (game.history().length > lesson.ply) game.undo();
+  const undone = takeBack(lesson.ply);
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null; crack = null;
   lesson.await = true; lesson.retry = false;
   lesson.arrows = lesson.guided ? (lesson.mentorArrows || []) : [];
   lessonPlayTools();
-  render(); renderMoves(); refreshStatus();
+  render(); animateBack(undone); renderMoves(); refreshStatus();
   if (engineReady) analyze(game.fen()).catch(() => {});
 }
 async function lessonPunish(t, reply, text, color) {
