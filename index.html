@@ -131,6 +131,17 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .crack { position: absolute; inset: 0; z-index: 2; pointer-events: none; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 :root { --m-wk: url("data:image/png;base64,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"); --m-bk: url("data:image/png;base64,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"); }
 .crack svg { width: 100%; height: 100%; display: block; }
+.shard { position: absolute; inset: 0; z-index: 3; pointer-events: none; transform: translate(var(--dx), var(--dy)) rotate(var(--r)); }
+.shard .pc, .shard .crack { z-index: auto; }
+.shard.fall { animation: shardfall 1s both; }
+/* Gravity: speeds up all the way down, a small bounce off the floor, settle. */
+@keyframes shardfall {
+  0% { transform: none; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  72% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+  84% { transform: translate(var(--dx), calc(var(--dy) - var(--b))) rotate(calc(var(--r) * 1.04)); animation-timing-function: cubic-bezier(.6, 0, .9, .5); }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); }
+}
+@media (prefers-reduced-motion: reduce) { .shard.fall { animation: none; } }
 .crack path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .crack .dk { stroke: #161412; }
 .crack .lt { stroke: rgba(255,255,255,.75); transform: translate(1px, 1px); }
@@ -2424,15 +2435,18 @@ function attackedBy(b, color) {
 }
 // Checkmate: cracks run across the mated king.
 function crackSVG() {
-  const paths = [], ox = 46 + Math.random() * 8, oy = 40 + Math.random() * 10;
+  const paths = [], mains = [], ox = 46 + Math.random() * 8, oy = 40 + Math.random() * 10;
   const branch = (x, y, ang, len, depth, delay) => {
     let d = `M${x.toFixed(1)} ${y.toFixed(1)}`;
+    const pts = [[x, y]], ang0 = ang;
+    if (!depth) mains.push({ ang: ang0, pts });
     const steps = 3 + Math.floor(Math.random() * 3);
     for (let k = 0; k < steps; k++) {
       ang += (Math.random() - .5) * .9;
       const l = len / steps * (.7 + Math.random() * .6);
       x += Math.cos(ang) * l; y += Math.sin(ang) * l;
       d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+      pts.push([x, y]);
       if (depth < 2 && Math.random() < .35) branch(x, y, ang + (Math.random() < .5 ? -1 : 1) * (.5 + Math.random() * .6), len * .45, depth + 1, delay + .12 * (k + 1));
     }
     paths.push({ d, w: depth ? .7 : 1, delay });
@@ -2440,16 +2454,137 @@ function crackSVG() {
   const n = 6 + Math.floor(Math.random() * 3);
   for (let i = 0; i < n; i++) branch(ox, oy, (i / n) * Math.PI * 2 + Math.random() * .5, 28 + Math.random() * 26, 0, Math.random() * .08);
   const one = (cls, sw) => paths.map((p) => `<path class="${cls}" pathLength="1" d="${p.d}" style="stroke-width:${(sw * p.w).toFixed(2)};animation-delay:${p.delay.toFixed(2)}s"></path>`).join("");
-  return `<svg viewBox="0 0 100 100" aria-hidden="true">${one("lt", 1.2)}${one("dk", 2.4)}</svg>`;
+  const svg = `<svg viewBox="0 0 100 100" aria-hidden="true">${one("lt", 1.2)}${one("dk", 2.4)}</svg>`;
+  return { svg, mains, ox, oy };
+}
+function makeCrack(fen, fresh) {
+  const c = crackSVG();
+  return { fen, svg: c.svg, mains: c.mains, ox: c.ox, oy: c.oy, fresh, shards: null, falling: false };
+}
+// ---------- the mated king falls apart along its cracks ----------
+// Opaque pixels of each king picture on a 100×100 grid, read once from the piece images.
+const KING_MASK = {};
+function loadKingMasks() {
+  for (const col of ["w", "b"]) {
+    const probe = document.createElement("span"); probe.className = "pc p-" + col + "k"; probe.style.display = "none";
+    document.body.appendChild(probe);
+    const url = (getComputedStyle(probe).backgroundImage.match(/url\("?(.*?)"?\)$/) || [])[1];
+    probe.remove();
+    if (!url) continue;
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const cv = document.createElement("canvas"); cv.width = cv.height = 100;
+        const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0, 100, 100);
+        const a = cx.getImageData(0, 0, 100, 100).data, pts = [];
+        for (let y = 0; y < 100; y++) for (let x = 0; x < 100; x++) if (a[(y * 100 + x) * 4 + 3] > 110) pts.push([x + .5, y + .5]);
+        KING_MASK[col] = pts;
+        if (crack && !crack.shards) render();
+      } catch (_) {}
+    };
+    img.src = url;
+  }
+}
+// Cuts the king into the wedges between neighbouring main cracks and works out where each wedge comes to rest:
+// pieces that lost their footing drop straight down (a little tilt, no scatter) onto the floor the king stood on,
+// or onto pieces already lying there.
+function breakKing(c, col) {
+  const mask = KING_MASK[col];
+  if (!mask || !c.mains || c.mains.length < 3) return null;
+  const mains = c.mains.slice().sort((a, z) => a.ang - z.ang);
+  const ray = (m) => { // the crack, carried on past its tip to well outside the square
+    const p = m.pts, [x1, y1] = p[p.length - 1], [x0, y0] = p[p.length - 2] || [c.ox, c.oy];
+    const L = Math.hypot(x1 - x0, y1 - y0) || 1;
+    return p.concat([[x1 + (x1 - x0) / L * 220, y1 + (y1 - y0) / L * 220]]);
+  };
+  const polys = mains.map((m, i) => {
+    const a = ray(m), b = ray(mains[(i + 1) % mains.length]);
+    const tipA = a[a.length - 1], tipB = b[b.length - 1];
+    const aA = Math.atan2(tipA[1] - c.oy, tipA[0] - c.ox);
+    let aB = Math.atan2(tipB[1] - c.oy, tipB[0] - c.ox);
+    while (aB <= aA) aB += Math.PI * 2;
+    const arc = [];
+    for (let k = 1; k < 8; k++) { const t = aA + (aB - aA) * k / 8; arc.push([c.ox + Math.cos(t) * 260, c.oy + Math.sin(t) * 260]); }
+    return a.concat(arc, b.slice().reverse().slice(0, -1));
+  });
+  const inside = (pt, poly) => {
+    let inn = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+      if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) inn = !inn;
+    }
+    return inn;
+  };
+  const groups = polys.map(() => []);
+  for (const pt of mask) {
+    let k = polys.findIndex((poly) => inside(pt, poly));
+    if (k < 0) { // a pixel right on a crack: give it to the wedge whose angle it falls in
+      const a = Math.atan2(pt[1] - c.oy, pt[0] - c.ox);
+      k = 0; let best = 9;
+      mains.forEach((m, i) => { const d = Math.abs(Math.atan2(Math.sin(a - m.ang - .3), Math.cos(a - m.ang - .3))); if (d < best) { best = d; k = i; } });
+    }
+    groups[k].push(pt);
+  }
+  const floor = Math.max(...mask.map((p) => p[1]));
+  const height = new Array(100).fill(floor + .5); // highest occupied y in each column
+  const shards = groups.map((pts, i) => ({ pts, poly: polys[i] })).filter((s) => s.pts.length > 12);
+  shards.forEach((s) => {
+    s.cx = s.pts.reduce((t, p) => t + p[0], 0) / s.pts.length;
+    s.cy = s.pts.reduce((t, p) => t + p[1], 0) / s.pts.length;
+    s.bottom = Math.max(...s.pts.map((p) => p[1]));
+  });
+  shards.sort((a, z) => z.bottom - a.bottom);
+  for (const s of shards) {
+    // Every piece tips away from the break point; the tall ones that stood on the floor topple onto their side.
+    const resting = s.bottom >= floor - 1.5;
+    const side = Math.sign(s.cx - c.ox) || (Math.random() < .5 ? -1 : 1);
+    const tall = (s.bottom - Math.min(...s.pts.map((p) => p[1]))) / Math.max(8, Math.max(...s.pts.map((p) => p[0])) - Math.min(...s.pts.map((p) => p[0])));
+    s.r = side * (resting ? Math.min(80, 20 + tall * 30 + Math.random() * 15) : 20 + Math.random() * 45);
+    s.dx = side * (resting ? 3 + Math.random() * 6 : 2 + Math.random() * 6);
+    const rad = s.r * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+    const placed = s.pts.map(([x, y]) => [s.cx + (x - s.cx) * cs - (y - s.cy) * sn + s.dx, s.cy + (x - s.cx) * sn + (y - s.cy) * cs]);
+    const low = {};
+    for (const [x, y] of placed) { const k = Math.max(0, Math.min(99, Math.floor(x))); if (!(k in low) || y > low[k]) low[k] = y; }
+    let dy = Infinity;
+    for (const k in low) dy = Math.min(dy, height[k] - .5 - low[k]);
+    s.dy = dy; // may be negative for a toppled piece: it lies lower but wider, resting on the floor
+
+    for (const [x, y] of placed) { const k = Math.max(0, Math.min(99, Math.floor(x))); height[k] = Math.min(height[k], y + s.dy - .5); }
+    s.delay = Math.random() * .12 + (resting ? .05 : 0);
+    s.dur = .28 + .1 * Math.sqrt(Math.max(1, s.dy));
+  }
+  return shards;
+}
+function shardsHTML(c, col) {
+  const clip = (poly) => "polygon(" + poly.map(([x, y]) => `${x.toFixed(1)}% ${y.toFixed(1)}%`).join(",") + ")";
+  return c.shards.map((s) => {
+    const vars = `--dx:${s.dx.toFixed(2)}%;--dy:${s.dy.toFixed(2)}%;--r:${s.r.toFixed(1)}deg;--b:${Math.min(2.2, s.dy * .07).toFixed(2)}%`;
+    // A redraw mid-fall picks the animation up where it was rather than starting it over.
+    const since = c.falling ? (performance.now() - c.fallStart) / 1000 : 0;
+    const motion = c.falling ? `animation-delay:${(s.delay - since).toFixed(2)}s;animation-duration:${(s.dur / .72).toFixed(2)}s` : "";
+    return `<span class="shard${c.falling ? " fall" : ""}" style="clip-path:${clip(s.poly)};-webkit-clip-path:${clip(s.poly)};transform-origin:${s.cx.toFixed(1)}% ${s.cy.toFixed(1)}%;${vars};${motion}">`
+      + `<span class="pc p-${col}k"></span><span class="crack" style="-webkit-mask-image: var(--m-${col}k); mask-image: var(--m-${col}k)">${c.svg}</span></span>`;
+  }).join("");
 }
 function crackKing() {
   if (!game.in_checkmate()) return;
   const fen = game.fen();
   setTimeout(() => {
     if (game.fen() !== fen) return;
-    crack = { fen, svg: crackSVG(), fresh: true };
+    crack = makeCrack(fen, true); crack.pending = true;
     render();
     crack.fresh = false;
+    const mine = crack;
+    // Cracks grow, the king shudders, then the pieces lose hold of each other and drop.
+    setTimeout(() => {
+      if (crack !== mine || game.fen() !== fen) return;
+      const k = game.board().flat().find((p) => p && p.type === "k" && p.color === game.turn());
+      mine.pending = false;
+      mine.shards = breakKing(mine, k ? k.color : game.turn());
+      if (!mine.shards) return;
+      mine.falling = !reduceMotion; mine.fallStart = performance.now(); render();
+      setTimeout(() => { if (crack === mine) mine.falling = false; }, 2200);
+    }, 900);
     const el = boardEl.querySelector(".crack");
     if (el && el.animate && !reduceMotion) el.parentElement.querySelectorAll(".pc, .crack").forEach((x) => x.animate(
       [{ transform: "none" }, { transform: "translate(-2%, 1%) rotate(-2deg)" }, { transform: "translate(2%, -1%) rotate(2deg)" }, { transform: "translate(-1%, 0) rotate(-1deg)" }, { transform: "none" }],
@@ -2703,7 +2838,12 @@ function render() {
     if (showNames) html = `<span class="sqname">${sq}</span>` + html;
     if (row === 7) html += `<span class="coord f">${sq[0]}</span>`;
     if (col === 0) html += `<span class="coord r">${sq[1]}</span>`;
-    if (crack && crack.fen === game.fen() && p && p.type === "k" && p.color === turn) {
+    const brokenKing = crack && crack.fen === game.fen() && p && p.type === "k" && p.color === turn;
+    // A mated king shown again later (reload, undo back to it) lies in pieces straight away.
+    if (brokenKing && !crack.shards && !crack.fresh && !crack.pending && KING_MASK[p.color]) crack.shards = breakKing(crack, p.color);
+    if (brokenKing && crack.shards) {
+      html = html.replace(pieceHTML(p), "") + shardsHTML(crack, p.color);
+    } else if (brokenKing) {
       html += `<span class="crack${crack.fresh ? " grow" : ""}" style="-webkit-mask-image: var(--m-${p.color}k); mask-image: var(--m-${p.color}k)">${crack.svg}</span>`;
     }
     if (guarded && p && p.type !== "k") {
@@ -3809,7 +3949,7 @@ async function enterOnline(code, color, saved) {
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
   playerColor = play; flipped = saved && typeof saved.flipped === "boolean" ? saved.flipped : play === "b";
-  crack = game.in_checkmate() ? { fen: game.fen(), svg: crackSVG(), fresh: false } : null;
+  crack = game.in_checkmate() ? makeCrack(game.fen(), false) : null;
   setEval({ cp: 0, mate: null });
   $("#newBtn").hidden = true;
   saveOnline(); pushPresence();
@@ -3826,7 +3966,7 @@ function leaveOnline() {
   $("#newBtn").hidden = false;
   game.reset(); verdicts = {}; arrow = null; selected = null; targets = new Set(); lastMove = null; crack = null;
   restore();
-  if (game.in_checkmate()) crack = { fen: game.fen(), svg: crackSVG(), fresh: false };
+  if (game.in_checkmate()) crack = makeCrack(game.fen(), false);
   setEval({ cp: 0, mate: null });
   render(); renderMoves(); updateStrips(); refreshStatus(); renderOnline();
   const c = card(); c.innerHTML = `<header><span class="kind">Снова против Stockfish</span></header>`;
@@ -4806,7 +4946,8 @@ function restore() {
   return false;
 }
 const resumed = restore();
-if (game.in_checkmate()) crack = { fen: game.fen(), svg: crackSVG(), fresh: false };
+if (game.in_checkmate()) crack = makeCrack(game.fen(), false);
+loadKingMasks();
 initControls();
 welcome();
 if (resumed) { const c = card(); c.innerHTML = `<header><span class="kind">Партия продолжается</span></header>`; para(c, "meta", "Я восстановил вашу последнюю партию в этом браузере. Чтобы начать заново, нажмите «Новая партия»."); }
