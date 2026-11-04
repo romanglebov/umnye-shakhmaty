@@ -131,6 +131,17 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .crack { position: absolute; inset: 0; z-index: 2; pointer-events: none; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 :root { --m-wk: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjCAYAAACPO76VAAANjUlEQVR4nO2dfWwT5x3Hv3ZwEpNcIK/EibAT6J2NmqCQBDYVBm1hawijAoRQ0FaQFppKXVpNWjVBYagFRtquqCtl0igBQSW2grZCxZpkKx1dBhWFOmRAW9s3yAsNCXkh4LNJbCf2/rjcxXFs5+7sI065jxTp7LvnuV/ue8/b7/k9jwEFBQUFBQUFBQXpqCbbADHkkyajZtibIvR6T5za3kJbrHLaFE2mTbYBYphrzLD0dw4Ivj5Vp0ULPXVeOPVkG6AwypQqGRwUSeLXr7wS8vy+t9+GjaYfokXRYUqKQRAESkpKMDw8HPL8VGRKisERSoypitJmxBAxVzLyKTJT407cEOzcIOMRldcg4wGVV/jLoCfVrku2m7bL4i2Uj5gTQzOkyiPS4w8EOzfgGBKV14BjCKHyYvpQDSCmxFCqqRgi5kqGPwcPHkRJSYmoNHFxcTj4/vshz5eWlkZqlmzEtBgA22MS02sSe30soVRTMYQiRgyhiBFDKGLEEDEvxlRtjKUQ072pjz8+jUuXLo37Pjc3F2VlZSHTNTQ0oKOjQ07TZCGmxairqw/6fXn5yrBidHR04PDhw3KZJRsxX00Fo7R0YdjzYgeKsULMlYwR5924qVIyr3BTSnr8MQCYO3du2Dz8zzN97mpb67U/RtlMWZBdjHyKzIx3JS72qZCrL5gR1GnXfv1+NQBA7brkmeZrbbHRPYHXzC1OPdbT5gRBJIEkybD3JAgCFEnCRtPQF8w4YGvFODFM+vmEd9qgyedNmKcCiDnFqQeG3N6gtvkAZkjj+VLu4AZZxGDd4PGVWYbkmgHHEDAy8RYqmGDUsxoPAJj1w4WYmaNFi7l/rTth8EKLje5x9LkAACVFCwTZUFxSAhtNj7mn0VCw3KfyLcwhZ9Qwd10ANPy5njbnhLblLvsButsc2zzx7sPBXphIiWrkBCtCwq+I9IRXg52nSDLolKi5qSlsvkRaAtiHB1RWVqKysnJCWxoaGrBr1y4AbJSIo9cFj2f8my/VtlSdFjdsd7KiKUrUSgaZV7gpPS3xmP8/TJEkVj/7LEpLS/mqxX/c4H/MMAxu3LgBq9WK/zaZYW6+AoZh31ZOCEB441xUVMQfB5bIkuJiFC1YAJIkQVEUsrOzw+ZF0zSamppQX1fHBzr0dw4gjUjp1uQVRq1NirhkmPTzCa/au9W/NJQUF6PqhRf4ByfVk0rTNOrr6/HJJ2d4Yb744gvB6Z955sd8uid/tARLn3oaixcvjihgoaurC7W1h8Z0u1N1Wnx31Z5iab/KSM4YEYph0s8nso3Jdu7NJYgkvPbaLixbtgxAdN3ZDQ0NsNlsePnllwWn2bNnN3S6HKxatWrCt18szc3N2L17Nzo7OwGwVWmX1RGRIBGJseKnS3xcFUCRJP508CBSUtjoS7fbHUnWUwKGYVCzZzc+/895AJELInnQR+U9vvVRFgJgu9B733wLP1n+NAC2bcsrnWmXmp+kkkHNoRYSqcQlYKwQU3mWLRIGBwfxi82b0HrrOwCAo9e1wtp2/TOx+UgqGVmzU3nv3eu7dvEl4lEUAgASExPxm22vYrpWCwBI1WnPmvTzRfcSRIthNBSu4UJmqqqq+C7ro1I1hSI3Nxc/f+45AIDH44VX7dskNg/RYugo4hTA9pwqKioAPLolwh+CILB48WJkZGQAANKyE4O6fsIhSox80mTkurEbN/7ska+e/ElMTAQArFu3DgBbOoyGguVi8hAlhsYTt5Y7XrVqFQBFCH+0Wi2Kior4tsOnwtNi0otyh3AONookkZubCyAyMRobG0EHrKPIzc1FUVFR1Adp/jAMgytXroy7N0mSWLBggeQRelJSEgYGBjBv3jyYm5qQlq19Fa3YLjS9KDG4KqrYz80hhRMnTuDIkVreVRGMkuJiVG7ZMsbHFCnNzc04+Zc/84O0YBBEEjZsqBDkjAyFaUQMj8eLfIrMFOpMFCxGPmkycscURUmxEQDrogicTtVo2NrS38lobmqC+cUXUVJcjO07dkRUUgJHyuHuzTBOHD58GJ2dt7Fjx29F3Uc7Uj3p9frR/IdUeQAEiSG4zfBfZSq1impsbOSF0GjUcPS61zp7PCkXL15WXbx4WWU2m1VMP7OI6XPt5dKYm5qwefNzaGxsFHUvDpqmsX79ujFCMH2uvY5e1wqz2azi7u3s8aQ4et1rtcns+1lXV48TJ05Iuufs2bNHP3gTFglNJ1gM1XBCLncs9S09MhIkoNGocaePMVnbrp0O9OPYbtou21qvb7/L2LMyDUkA2Ld169atku5ZXf0iXx2m6rS4y9izbK3XtweOkC3tVxlr27XTvS0DKVxpOXnypKR7JiUlSUonWAyfCrwYXMkQCzcXcLfrwbaJpjBbbHRPw0eNKqZvcJukm43ACZFpSMLZv59XTVR/W9qvMn1dg5sBoLOzE11dXZHcXhSSHYWR9KJUPrVF+NXqiOYIOG429VcLvValdn3LHYsRY2BA+Br1YAgXQ+3i/VGBXUKx+FReU0QZyIx/lSwGl8s18UVhkFQy7HY74uLiRKfT6XQAgCxDco0UR9rDwt/lI6ZrzYnR3t7Of6fyQXBoo2Ax1EOJfNViNpuFJhvD888/D4Bda+dVDwdf+DjJkHmFm7jx1IYNFYLTDQ4O8s7SW7du8d+74z3fhkoTiGAxLO1XGSItAQDw+blzgo30p6ysDNSIl5dIT6wxGgrXSMpIJqg51EIuUI4d/AVddBuUe/fu8cfmr74CwPYaxcRaiaqmbtP3twFsr0hqYPH2HTtAEGzXLzkj/pRYZ5pc5JMmY1rWDL5dfPPN3wt2i7jdbjAM289wOp18eM/MHK0oG0SJ4dEMn+KOa2trJbUbJEli+/bRkW2qTnvWf3Q/GeSTJuOsdMLCjcJ37twpqq3o7u7mjz/99FP+uMV8d4UYO0SJ0UJbrKk6Vu0zZ85I7oMvXboUO3fuBMC6IWalE5bJEiSfIjP9haioqAgb4R5If38/36V1Op34R0MDAECbPA1ip15F96bav+nmh/e7Xn9dbHKesrKySRfEpJ9PGAyZ3ZwQ5eUrRYUCMQyD3t5e/vPpv/0VD0aE6Wl9sDZUulCIFsN203aZc1OYm5ok+28AVhDOO8oLQpGZkjMUQWDMV3n5SlGOQYZhxtQMFosF//zsXwDYkB1r27XTYm2SNM6wXu/M4vw3R47URjQIrKysRHn5SgCsIAZDZrfcY5BoC+F0OvHuH/7Af25rvStpUCsp1rbFRvfEGwpWJGcknOWceEePHpU8KcM9iLq6ejB3Xcg2Jtu90yi2OvT6ciRlOg5fDjWHWggAXq93DScERZIRC/FWzV6+erL3uTe3tEpbOhBRRCGV9/hWIj2xBmD/qfcOHIgojvWl6uqwEeli4mw5nnjiiZDnxNocKAQA7H/3Xd5mps+119Z6XfDMXiARLSOztX79Btd+2GgaL1VX8/1tKeytqeEHhXJDEEkRC3Ho0CFeCCItAWqv+o1IbIpKFLp//VtSXIz3DoiOUuHhlgb4E42pV5qm4XSOTvNmZ2cLnpcJJcT589GJseWIymKZSBvEWGYiITQaNe7ddkUsBBCl1a6W9qtMl9WRwvmu6urqsWfP7mhkPakIEeJOH2OKhhBAFJcef98EESpENBddRnUd+PdFkMkQApBhUf5UFySYEMc/OCa7EIBMOyQEE2T//v1y3CqqBBPiwoULvJtDTiEAGbersLRfZdraeni3yYcffoiGEY9mLBJMCIvFgvdH9juUWwhA5r1DWmx0z50+xsQJ8s47+yIOZpCDYEIE+pvudt9fJPcOCQ/l5wyMhoLlyRkJZwHWBXH02DFB6bq6uqIatxRsoBdMCACoqamBxcJO+9v73Jvp1msfRM2QEDy035bw92NVVFRg6dKlsFqtcDgcuGGzgnE+ADDxbglRtYkkoY6LQ9L06dAbDJg+fTr0ej3a29tx/PhxAGzwW8NHjQ/lOT00MfJJkzEtJUlE8FpswPQzix7WNt2yi5FPkZlzqVnd4X4RRqfTIWckpqrEbxNgo9GI5OTkoGlIkuRXTgUSKpTI4XDAah2t9v9ns+K+nQHDMGF/byNVp0X7N92yiyKrGEZD4ZpUXeKpwP1EnnzqKRiNRjz22GOS43blwG63g6ZpmM1mfH7u3DiBmL7BbbbWryPyzIZDNjGMhsI1yRnxfDTJ6tWrsWXLlph6+BPR0dGB2tpanDlzhv8u0jmLcMgiRj5FZs5Km9nt8XjH7SciBjnWC0oJL6JpGlVVW/iIdqmL7idCFjGovILfcbvs7Nu3b4wQgQ84lhZoBgrl/5mmaWzcuBEAG4Zz/t9fRv3ZRX3QZ9LPJzghVq9ejSVLlsDtdvN/3JYWsbi1RaBt/nbPmTMHVVVVANhYYTnCiqIuhk/l48M1169fH3MPXCrDw8Njgts0Ho2oaEEhyCDG6NqLiTZ2nGpkZ2fzc/ShNr+MhKiLoS9IrQHYufDvIznZswAAQ67Q+x1KZUpuMjyZzKXYpsJ/38RoIZsYZARrxR9Voi6Go5d9Y6Quv32UiboY4faOVQiP0mbEELLthV5XV4fmK1fkyn7SuD2ydaocyCZGZ2cnv+ergjCiLga3zExBQUFBQUFBQUFBQUFBQcGP/wN6blOTVOKa7AAAAABJRU5ErkJggg=="); --m-bk: url("data:image/png;base64,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"); }
 .crack svg { width: 100%; height: 100%; display: block; }
+.shard { position: absolute; inset: 0; z-index: 3; pointer-events: none; transform: translate(var(--dx), var(--dy)) rotate(var(--r)); }
+.shard .pc, .shard .crack { z-index: auto; }
+.shard.fall { animation: shardfall 1s both; }
+/* Gravity: speeds up all the way down, a small bounce off the floor, settle. */
+@keyframes shardfall {
+  0% { transform: none; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  72% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+  84% { transform: translate(var(--dx), calc(var(--dy) - var(--b))) rotate(calc(var(--r) * 1.04)); animation-timing-function: cubic-bezier(.6, 0, .9, .5); }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); }
+}
+@media (prefers-reduced-motion: reduce) { .shard.fall { animation: none; } }
 .crack path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .crack .dk { stroke: #161412; }
 .crack .lt { stroke: rgba(255,255,255,.75); transform: translate(1px, 1px); }
@@ -139,6 +150,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 @keyframes crackgrow { to { stroke-dashoffset: 0; } }
 @media (prefers-reduced-motion: reduce) { .crack.grow path { animation: none; stroke-dashoffset: 0; } }
 .coord { position: absolute; font-family: var(--f-ui); font-weight: 600; font-size: 2.1cqw; line-height: 1; pointer-events: none; z-index: 1; }
+.sqname { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--f-mono); font-weight: 700; font-size: 10cqw; line-height: 1; letter-spacing: -.06em; color: rgba(0,0,0,.08); overflow: hidden; pointer-events: none; z-index: 0; }
 .coord.f { right: 4%; bottom: 4%; } .coord.r { left: 5%; top: 5%; }
 .sq.light .coord { color: var(--sq-coord-light); } .sq.dark .coord { color: var(--sq-coord-dark); }
 .arrows.over { z-index: 2; }
@@ -235,6 +247,31 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .v-best { --vc: var(--v-best); } .v-excellent { --vc: var(--v-best); } .v-good { --vc: var(--v-good); }
 .v-inaccuracy { --vc: var(--v-inacc); } .v-mistake { --vc: var(--v-mist); } .v-blunder { --vc: var(--v-blun); }
 .v-pending { --vc: var(--muted); }
+/* Lesson: Scholar's mate drills */
+.lesson { gap: 10px; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.lesson .ls-head { display: grid; gap: 2px; }
+.lesson h3 { margin: 0; font-family: var(--f-text); font-weight: 600; font-size: 1.15rem; }
+.ls-log { display: grid; gap: 8px; max-height: 340px; overflow-y: auto; }
+@media (max-width: 920px) { .ls-log { max-height: none; } }
+.ls-msg { margin: 0; font-family: var(--f-text); font-size: .98rem; line-height: 1.55; padding: 10px 12px; border-radius: 10px; background: var(--raise); border: 1px solid var(--line); overflow-wrap: anywhere; opacity: .62; }
+.ls-msg.now { opacity: 1; }
+.ls-msg.good { border-color: color-mix(in srgb, var(--v-good) 55%, var(--line)); background: color-mix(in srgb, var(--v-good) 9%, var(--raise)); }
+.ls-msg.bad { border-color: color-mix(in srgb, var(--v-blun) 55%, var(--line)); background: color-mix(in srgb, var(--v-blun) 8%, var(--raise)); }
+.ls-msg.alt { border-color: color-mix(in srgb, var(--v-inacc) 55%, var(--line)); }
+.ls-msg.hint { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: var(--accent-soft); }
+.ls-msg.wait { color: var(--muted); font-style: italic; }
+.ls-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.ls-list { display: grid; gap: 6px; }
+.ls-item { font: inherit; text-align: left; display: grid; grid-template-columns: 1.6em 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--raise); color: var(--ink); cursor: pointer; }
+.ls-item:hover { border-color: var(--muted); }
+.ls-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ls-n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .85rem; }
+.ls-dots { display: inline-flex; gap: 4px; }
+.ls-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.ls-dots i.on { background: var(--v-good); border-color: var(--v-good); }
+.sq.mark::after { content: ""; position: absolute; inset: 6%; border-radius: 50%; box-shadow: inset 0 0 0 .55cqw rgba(226,51,42,.85); pointer-events: none; z-index: 1; }
+body.in-lesson .actions, body.in-lesson #onlinePanel, body.in-lesson .panel.coach { display: none; }
+.lesson-entry { border-color: var(--accent); color: var(--accent); }
 .dots::after { content: "…"; animation: blink 1.2s infinite; }
 @keyframes blink { 50% { opacity: .2; } }
 @media (prefers-reduced-motion: reduce) { .dots::after { animation: none; } .evalbar .fill { transition: none; } }
@@ -289,6 +326,13 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
         <div class="seg" id="atkSeg"><button type="button" data-v="off" aria-pressed="true">Нет</button><button type="button" data-v="me" aria-pressed="false">Мои</button><button type="button" data-v="op" aria-pressed="false">Чужие</button><button type="button" data-v="both" aria-pressed="false">Все</button></div>
         <span class="atk-legend"><span><i style="background: var(--atk-me); border-radius: 50%"></i>бью я (справа сверху)</span><span><i style="background: var(--atk-op); border-radius: 50%"></i>бьёт соперник (слева снизу)</span></span>
       </div>
+      <div class="row"><span class="lbl">Фигуры в тексте</span>
+        <div class="seg" id="iconsSeg"><button type="button" data-v="on" aria-pressed="true">Иконки</button><button type="button" data-v="off" aria-pressed="false">Словами</button></div>
+        <span class="note-small">как наставник называет фигуры в уроке</span>
+      </div>
+      <div class="row"><span class="lbl">Названия клеток</span>
+        <div class="seg" id="namesSeg"><button type="button" data-v="on" aria-pressed="true">Вкл</button><button type="button" data-v="off" aria-pressed="false">Выкл</button></div>
+      </div>
       <div class="row"><span class="lbl">Звук ходов</span>
         <div class="seg" id="soundSeg"><button type="button" data-v="on" aria-pressed="true">Вкл</button><button type="button" data-v="off" aria-pressed="false">Выкл</button></div>
       </div>
@@ -342,10 +386,18 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
         <button class="btn" id="flipBtn" type="button">Развернуть доску</button>
         <button class="btn" id="swapBtn" type="button" title="Поменяться цветами с соперником">⇄ Поменяться</button>
         <button class="btn" id="newBtn" type="button">Новая партия</button>
+        <button class="btn lesson-entry" id="lessonBtn" type="button">Урок: защита от детского мата</button>
       </div>
     </section>
 
     <aside class="side">
+      <section class="panel lesson" id="lessonPanel" aria-label="Урок" hidden>
+        <h2>Урок с наставником</h2>
+        <div class="ls-head"><h3 id="lsTitle">Защита от детского мата</h3><p class="note-small" id="lsSub" hidden></p></div>
+        <div class="ls-log" id="lsLog" aria-live="polite"></div>
+        <div class="ls-list" id="lsList"></div>
+        <div class="ls-tools" id="lsTools"></div>
+      </section>
       <section class="panel online" id="onlinePanel" aria-label="Игра по сети">
         <h2>Игра по сети</h2>
         <div class="online-body" id="onlineBody"><p class="note-small">Подключаюсь…</p></div>
@@ -2193,9 +2245,10 @@ function seeMap() {
   return map;
 }
 let showShields = true, showSee = true, showPotential = true, heatMode = "off";
-let attackView = "off", showBest = false, crack = null;
+let attackView = "off", showBest = false, crack = null, showNames = true, pieceIcons = true;
 let flipped = false, selected = null, targets = new Set(), lastMove = null, arrow = null, drag = null;
 let busy = true, gen = 0, engineReady = false;
+let lesson = null;             // lesson run state (Scholar's mate drills); null in a normal game
 let verdicts = {};             // ply index -> {key, san, loss, bestSan}
 let lastEval = { cp: 0, mate: null };
 let lastCoachText = "";
@@ -2382,15 +2435,18 @@ function attackedBy(b, color) {
 }
 // Checkmate: cracks run across the mated king.
 function crackSVG() {
-  const paths = [], ox = 46 + Math.random() * 8, oy = 40 + Math.random() * 10;
+  const paths = [], mains = [], ox = 46 + Math.random() * 8, oy = 40 + Math.random() * 10;
   const branch = (x, y, ang, len, depth, delay) => {
     let d = `M${x.toFixed(1)} ${y.toFixed(1)}`;
+    const pts = [[x, y]], ang0 = ang;
+    if (!depth) mains.push({ ang: ang0, pts });
     const steps = 3 + Math.floor(Math.random() * 3);
     for (let k = 0; k < steps; k++) {
       ang += (Math.random() - .5) * .9;
       const l = len / steps * (.7 + Math.random() * .6);
       x += Math.cos(ang) * l; y += Math.sin(ang) * l;
       d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+      pts.push([x, y]);
       if (depth < 2 && Math.random() < .35) branch(x, y, ang + (Math.random() < .5 ? -1 : 1) * (.5 + Math.random() * .6), len * .45, depth + 1, delay + .12 * (k + 1));
     }
     paths.push({ d, w: depth ? .7 : 1, delay });
@@ -2398,16 +2454,137 @@ function crackSVG() {
   const n = 6 + Math.floor(Math.random() * 3);
   for (let i = 0; i < n; i++) branch(ox, oy, (i / n) * Math.PI * 2 + Math.random() * .5, 28 + Math.random() * 26, 0, Math.random() * .08);
   const one = (cls, sw) => paths.map((p) => `<path class="${cls}" pathLength="1" d="${p.d}" style="stroke-width:${(sw * p.w).toFixed(2)};animation-delay:${p.delay.toFixed(2)}s"></path>`).join("");
-  return `<svg viewBox="0 0 100 100" aria-hidden="true">${one("lt", 1.2)}${one("dk", 2.4)}</svg>`;
+  const svg = `<svg viewBox="0 0 100 100" aria-hidden="true">${one("lt", 1.2)}${one("dk", 2.4)}</svg>`;
+  return { svg, mains, ox, oy };
+}
+function makeCrack(fen, fresh) {
+  const c = crackSVG();
+  return { fen, svg: c.svg, mains: c.mains, ox: c.ox, oy: c.oy, fresh, shards: null, falling: false };
+}
+// ---------- the mated king falls apart along its cracks ----------
+// Opaque pixels of each king picture on a 100×100 grid, read once from the piece images.
+const KING_MASK = {};
+function loadKingMasks() {
+  for (const col of ["w", "b"]) {
+    const probe = document.createElement("span"); probe.className = "pc p-" + col + "k"; probe.style.display = "none";
+    document.body.appendChild(probe);
+    const url = (getComputedStyle(probe).backgroundImage.match(/url\("?(.*?)"?\)$/) || [])[1];
+    probe.remove();
+    if (!url) continue;
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const cv = document.createElement("canvas"); cv.width = cv.height = 100;
+        const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0, 100, 100);
+        const a = cx.getImageData(0, 0, 100, 100).data, pts = [];
+        for (let y = 0; y < 100; y++) for (let x = 0; x < 100; x++) if (a[(y * 100 + x) * 4 + 3] > 110) pts.push([x + .5, y + .5]);
+        KING_MASK[col] = pts;
+        if (crack && !crack.shards) render();
+      } catch (_) {}
+    };
+    img.src = url;
+  }
+}
+// Cuts the king into the wedges between neighbouring main cracks and works out where each wedge comes to rest:
+// pieces that lost their footing drop straight down (a little tilt, no scatter) onto the floor the king stood on,
+// or onto pieces already lying there.
+function breakKing(c, col) {
+  const mask = KING_MASK[col];
+  if (!mask || !c.mains || c.mains.length < 3) return null;
+  const mains = c.mains.slice().sort((a, z) => a.ang - z.ang);
+  const ray = (m) => { // the crack, carried on past its tip to well outside the square
+    const p = m.pts, [x1, y1] = p[p.length - 1], [x0, y0] = p[p.length - 2] || [c.ox, c.oy];
+    const L = Math.hypot(x1 - x0, y1 - y0) || 1;
+    return p.concat([[x1 + (x1 - x0) / L * 220, y1 + (y1 - y0) / L * 220]]);
+  };
+  const polys = mains.map((m, i) => {
+    const a = ray(m), b = ray(mains[(i + 1) % mains.length]);
+    const tipA = a[a.length - 1], tipB = b[b.length - 1];
+    const aA = Math.atan2(tipA[1] - c.oy, tipA[0] - c.ox);
+    let aB = Math.atan2(tipB[1] - c.oy, tipB[0] - c.ox);
+    while (aB <= aA) aB += Math.PI * 2;
+    const arc = [];
+    for (let k = 1; k < 8; k++) { const t = aA + (aB - aA) * k / 8; arc.push([c.ox + Math.cos(t) * 260, c.oy + Math.sin(t) * 260]); }
+    return a.concat(arc, b.slice().reverse().slice(0, -1));
+  });
+  const inside = (pt, poly) => {
+    let inn = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+      if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) inn = !inn;
+    }
+    return inn;
+  };
+  const groups = polys.map(() => []);
+  for (const pt of mask) {
+    let k = polys.findIndex((poly) => inside(pt, poly));
+    if (k < 0) { // a pixel right on a crack: give it to the wedge whose angle it falls in
+      const a = Math.atan2(pt[1] - c.oy, pt[0] - c.ox);
+      k = 0; let best = 9;
+      mains.forEach((m, i) => { const d = Math.abs(Math.atan2(Math.sin(a - m.ang - .3), Math.cos(a - m.ang - .3))); if (d < best) { best = d; k = i; } });
+    }
+    groups[k].push(pt);
+  }
+  const floor = Math.max(...mask.map((p) => p[1]));
+  const height = new Array(100).fill(floor + .5); // highest occupied y in each column
+  const shards = groups.map((pts, i) => ({ pts, poly: polys[i] })).filter((s) => s.pts.length > 12);
+  shards.forEach((s) => {
+    s.cx = s.pts.reduce((t, p) => t + p[0], 0) / s.pts.length;
+    s.cy = s.pts.reduce((t, p) => t + p[1], 0) / s.pts.length;
+    s.bottom = Math.max(...s.pts.map((p) => p[1]));
+  });
+  shards.sort((a, z) => z.bottom - a.bottom);
+  for (const s of shards) {
+    // Every piece tips away from the break point; the tall ones that stood on the floor topple onto their side.
+    const resting = s.bottom >= floor - 1.5;
+    const side = Math.sign(s.cx - c.ox) || (Math.random() < .5 ? -1 : 1);
+    const tall = (s.bottom - Math.min(...s.pts.map((p) => p[1]))) / Math.max(8, Math.max(...s.pts.map((p) => p[0])) - Math.min(...s.pts.map((p) => p[0])));
+    s.r = side * (resting ? Math.min(80, 20 + tall * 30 + Math.random() * 15) : 20 + Math.random() * 45);
+    s.dx = side * (resting ? 3 + Math.random() * 6 : 2 + Math.random() * 6);
+    const rad = s.r * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+    const placed = s.pts.map(([x, y]) => [s.cx + (x - s.cx) * cs - (y - s.cy) * sn + s.dx, s.cy + (x - s.cx) * sn + (y - s.cy) * cs]);
+    const low = {};
+    for (const [x, y] of placed) { const k = Math.max(0, Math.min(99, Math.floor(x))); if (!(k in low) || y > low[k]) low[k] = y; }
+    let dy = Infinity;
+    for (const k in low) dy = Math.min(dy, height[k] - .5 - low[k]);
+    s.dy = dy; // may be negative for a toppled piece: it lies lower but wider, resting on the floor
+
+    for (const [x, y] of placed) { const k = Math.max(0, Math.min(99, Math.floor(x))); height[k] = Math.min(height[k], y + s.dy - .5); }
+    s.delay = Math.random() * .12 + (resting ? .05 : 0);
+    s.dur = .28 + .1 * Math.sqrt(Math.max(1, s.dy));
+  }
+  return shards;
+}
+function shardsHTML(c, col) {
+  const clip = (poly) => "polygon(" + poly.map(([x, y]) => `${x.toFixed(1)}% ${y.toFixed(1)}%`).join(",") + ")";
+  return c.shards.map((s) => {
+    const vars = `--dx:${s.dx.toFixed(2)}%;--dy:${s.dy.toFixed(2)}%;--r:${s.r.toFixed(1)}deg;--b:${Math.min(2.2, s.dy * .07).toFixed(2)}%`;
+    // A redraw mid-fall picks the animation up where it was rather than starting it over.
+    const since = c.falling ? (performance.now() - c.fallStart) / 1000 : 0;
+    const motion = c.falling ? `animation-delay:${(s.delay - since).toFixed(2)}s;animation-duration:${(s.dur / .72).toFixed(2)}s` : "";
+    return `<span class="shard${c.falling ? " fall" : ""}" style="clip-path:${clip(s.poly)};-webkit-clip-path:${clip(s.poly)};transform-origin:${s.cx.toFixed(1)}% ${s.cy.toFixed(1)}%;${vars};${motion}">`
+      + `<span class="pc p-${col}k"></span><span class="crack" style="-webkit-mask-image: var(--m-${col}k); mask-image: var(--m-${col}k)">${c.svg}</span></span>`;
+  }).join("");
 }
 function crackKing() {
   if (!game.in_checkmate()) return;
   const fen = game.fen();
   setTimeout(() => {
     if (game.fen() !== fen) return;
-    crack = { fen, svg: crackSVG(), fresh: true };
+    crack = makeCrack(fen, true); crack.pending = true;
     render();
     crack.fresh = false;
+    const mine = crack;
+    // Cracks grow, the king shudders, then the pieces lose hold of each other and drop.
+    setTimeout(() => {
+      if (crack !== mine || game.fen() !== fen) return;
+      const k = game.board().flat().find((p) => p && p.type === "k" && p.color === game.turn());
+      mine.pending = false;
+      mine.shards = breakKing(mine, k ? k.color : game.turn());
+      if (!mine.shards) return;
+      mine.falling = !reduceMotion; mine.fallStart = performance.now(); render();
+      setTimeout(() => { if (crack === mine) mine.falling = false; }, 2200);
+    }, 900);
     const el = boardEl.querySelector(".crack");
     if (el && el.animate && !reduceMotion) el.parentElement.querySelectorAll(".pc, .crack").forEach((x) => x.animate(
       [{ transform: "none" }, { transform: "translate(-2%, 1%) rotate(-2deg)" }, { transform: "translate(2%, -1%) rotate(2deg)" }, { transform: "translate(-1%, 0) rotate(-1deg)" }, { transform: "none" }],
@@ -2432,7 +2609,7 @@ function knightPath(ar) {
 }
 function arrowSVG(ar) {
   const a = visual(ar.from), z = visual(ar.to), p = game.get(ar.from);
-  const fill = p && p.color === "b" ? "#565352" : "#F9F9F9", ink = "#262421";
+  const fill = ar.tone === "t" ? "#E2332A" : ar.tone === "h" ? "#3E9E4A" : p && p.color === "b" ? "#565352" : "#F9F9F9", ink = "#262421";
   const x1 = a.col + .5, y1 = a.row + .5, x2 = z.col + .5, y2 = z.row + .5;
   const dxs = Math.abs(x2 - x1), dys = Math.abs(y2 - y1);
   const pts = [[x1, y1]];
@@ -2456,6 +2633,29 @@ function animateMove(mv) {
   const pairs = [[mv.from, mv.to]], back = mv.color === "w" ? "1" : "8";
   if (mv.flags.includes("k")) pairs.push(["h" + back, "f" + back]);
   if (mv.flags.includes("q")) pairs.push(["a" + back, "d" + back]);
+  slidePieces(pairs);
+}
+// Undone moves (as game.undo() returned them, latest first) slide back to where they came from.
+// A piece taken back over several moves goes straight from where it stood to where it ends up.
+function takeBack(toLen) {
+  const out = [];
+  while (game.history().length > toLen) out.push(game.undo());
+  return out;
+}
+function animateBack(undone) {
+  if (reduceMotion || !undone || !undone.length) return;
+  const start = new Map();
+  const step = (a, z) => { const s0 = start.has(a) ? start.get(a) : a; start.delete(a); start.set(z, s0); };
+  for (const mv of undone) {
+    if (!mv) continue;
+    const back = mv.color === "w" ? "1" : "8";
+    step(mv.to, mv.from);
+    if (mv.flags.includes("k")) step("f" + back, "h" + back);
+    if (mv.flags.includes("q")) step("d" + back, "a" + back);
+  }
+  slidePieces([...start].filter(([z, a]) => a !== z).map(([z, a]) => [a, z]));
+}
+function slidePieces(pairs) {
   const s = boardEl.getBoundingClientRect().width / 8;
   for (const [a, z] of pairs) {
     const el = boardEl.querySelector(`.sq[data-sq="${z}"] .pc`);
@@ -2628,15 +2828,22 @@ function render() {
     if (drag && drag.started && drag.sq === sq) cls += " lifting";
     if (atkMe && atkMe.has(sq)) cls += " a-me";
     if (atkOp && atkOp.has(sq)) cls += " a-op";
+    if (lesson && lesson.marks.includes(sq)) cls += " mark";
     el.className = cls;
     el.dataset.sq = sq;
     let html = p ? pieceHTML(p) : "";
     const h = heat && heat[(8 - r) * 8 + f];
     if (h !== null && h !== undefined && heat) html = `<span class="heat" style="background:${heatColor(h)}"></span>` + html;
     if (potPawns && p) { const t = potential(b, 8 - r, f, p, potPawns[p.color]); if (t !== null) html += potBar(t); }
+    if (showNames) html = `<span class="sqname">${sq}</span>` + html;
     if (row === 7) html += `<span class="coord f">${sq[0]}</span>`;
     if (col === 0) html += `<span class="coord r">${sq[1]}</span>`;
-    if (crack && crack.fen === game.fen() && p && p.type === "k" && p.color === turn) {
+    const brokenKing = crack && crack.fen === game.fen() && p && p.type === "k" && p.color === turn;
+    // A mated king shown again later (reload, undo back to it) lies in pieces straight away.
+    if (brokenKing && !crack.shards && !crack.fresh && !crack.pending && KING_MASK[p.color]) crack.shards = breakKing(crack, p.color);
+    if (brokenKing && crack.shards) {
+      html = html.replace(pieceHTML(p), "") + shardsHTML(crack, p.color);
+    } else if (brokenKing) {
       html += `<span class="crack${crack.fresh ? " grow" : ""}" style="-webkit-mask-image: var(--m-${p.color}k); mask-image: var(--m-${p.color}k)">${crack.svg}</span>`;
     }
     if (guarded && p && p.type !== "k") {
@@ -2647,7 +2854,7 @@ function render() {
     el.innerHTML = `<span class="atk"></span>` + html + `<span class="hint"></span>`;
     el.setAttribute("aria-label", sq + (p ? ", " + (p.color === "w" ? "белый " : "чёрный ") + NAME_RU[p.type] : ""));
   });
-  $("#arrowG").innerHTML = arrow ? arrowSVG(arrow) : "";
+  $("#arrowG").innerHTML = (arrow ? arrowSVG(arrow) : "") + (lesson ? lesson.arrows.map(arrowSVG).join("") : "");
   const src = arrow && game.get(arrow.from);
   const over = !!src && ((src.type === "n" && knightPath(arrow).blocked > 0) || !!game.get(arrow.to) || (src.type === "p" && arrow.from[0] !== arrow.to[0]));
   $("#arrows").classList.toggle("over", over);
@@ -2694,11 +2901,11 @@ function updateStrips() {
   const opp = playerColor === "w" ? "b" : "w";
   const topIsOpp = (playerColor === "w") !== flipped;
   const cap = capturedInfo();
-  const oppName = online ? esc(online.oppName || "Соперник") : "Stockfish";
+  const oppName = lesson ? "Наставник" : online ? esc(online.oppName || "Соперник") : "Stockfish";
   const oppHTML = `<i class="${opp}"></i>${oppName}${capHTML(cap, opp)}`, meHTML = `<i class="${playerColor}"></i>Вы, ${colorRu(playerColor)}${capHTML(cap, playerColor)}`;
   $("#oppWho").innerHTML = topIsOpp ? oppHTML : meHTML;
   $("#meWho").innerHTML = topIsOpp ? meHTML : oppHTML;
-  $("#oppSub").textContent = online ? (oppHere() ? "по сети" : "по сети, не в сети") : usingMini ? "запасной движок" : LEVELS[level].name;
+  $("#oppSub").textContent = lesson ? "урок" : online ? (oppHere() ? "по сети" : "по сети, не в сети") : usingMini ? "запасной движок" : LEVELS[level].name;
 }
 // Shield preview while dragging: would the piece be defended on that square?
 function guardedNow(sq) { return attackedBy(game.board(), game.get(sq).color).has(sq); }
@@ -2718,7 +2925,7 @@ function sqFromPoint(x, y) {
   const col = Math.floor((x - r.left) / (r.width / 8)), row = Math.floor((y - r.top) / (r.height / 8));
   return squareAt(Math.min(7, row), Math.min(7, col));
 }
-const canInteract = () => (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
+const canInteract = () => lesson ? lesson.await && !game.game_over() && game.turn() === playerColor && $("#promo").hidden : (online ? online.live && online.sideReady && !online.over : engineReady && !busy) && !game.game_over() && game.turn() === playerColor && $("#promo").hidden;
 function select(sq) { selected = sq; targets = new Set(game.moves({ square: sq, verbose: true }).map((m) => m.to)); render(); }
 function deselect() { selected = null; targets = new Set(); render(); }
 function attempt(from, to, dragged) {
@@ -2820,6 +3027,8 @@ function resultText() {
   return "";
 }
 function refreshStatus() {
+  $("#lessonBtn").disabled = !!online;
+  if (lesson) return lessonStatus();
   if (online) return onlineStatus();
   if (!engineReady) return setStatus("Загружаю Stockfish", true);
   if (game.game_over()) { setStatus(resultText()); $("#status").classList.add("end"); }
@@ -2833,7 +3042,7 @@ function refreshStatus() {
 }
 // "Best move" mode: draw Stockfish's best move as an arrow before each of the player's moves.
 function maybeShowBest() {
-  if (online || !showBest || !engineReady || busy || game.game_over() || game.turn() !== playerColor) return;
+  if (online || lesson || !showBest || !engineReady || busy || game.game_over() || game.turn() !== playerColor) return;
   const fen = game.fen();
   analyze(fen).then((r) => {
     if (!showBest || busy || game.fen() !== fen || !r.bestmove) return;
@@ -2858,7 +3067,12 @@ function renderMoves() {
   ol.scrollTop = ol.scrollHeight;
 }
 function save() {
-  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode };
+  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode, showNames, pieceIcons };
+  if (lesson) {
+    // The lesson board is never saved; the game left behind stays as it was.
+    try { const s = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; localStorage.setItem(KEY, JSON.stringify({ ...s, ...prefs })); } catch (_) {}
+    return;
+  }
   if (online) {
     // The Stockfish game stays as it was; only the settings follow along.
     saveOnline();
@@ -3027,6 +3241,7 @@ function classify(before, after, mv) {
 
 // ---------- game flow ----------
 async function playerMove(from, to, promotion, anim) {
+  if (lesson) return lessonMove(from, to, promotion, anim);
   if (online) return onlineMove(from, to, promotion, anim);
   const g = gen, fenBefore = game.fen(), ply = game.history().length;
   const histBefore = game.history();
@@ -3262,24 +3477,28 @@ function undoCount() {
   return Math.min(n, len - minLen);
 }
 function undo() {
+  if (lesson) return lessonUndo();
   if (online) return askTakeback();
   const n = undoCount();
   if (n <= 0 || !engineReady) return;
   if (busy) { engine.stop(); cache.clear(); busy = false; }
-  for (let i = 0; i < n; i++) game.undo();
+  const undone = takeBack(game.history().length - n);
   const len = game.history().length;
   Object.keys(verdicts).forEach((k) => { if (+k >= len) delete verdicts[k]; });
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
   selected = null; targets = new Set(); arrow = null; gen++;
-  render(); renderMoves(); save(); refreshStatus();
+  render(); animateBack(undone); renderMoves(); save(); refreshStatus();
   analyze(game.fen());
   feed.querySelectorAll(".card[data-ply]").forEach((el) => { if (+el.dataset.ply >= len) el.classList.add("undone"); });
 }
 $("#undoBtn").addEventListener("click", undo);
+$("#lessonBtn").addEventListener("click", lessonEnter);
 document.addEventListener("keydown", (e) => {
   if (e.target.closest && e.target.closest("input")) return;
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
+  // By key position, so Ctrl+Z also works on the Russian layout (where the key gives "я").
+  const z = e.code === "KeyZ" || ["z", "я"].includes((e.key || "").toLowerCase());
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && z) { e.preventDefault(); undo(); }
 });
 $("#flipBtn").addEventListener("click", () => { flipped = !flipped; render(); save(); });
 $("#swapBtn").addEventListener("click", swapClick);
@@ -3319,7 +3538,7 @@ let paintColor;
 function initControls() {
   paintColor = segInit("#colorSeg", pendingColor, (v) => {
     pendingColor = v;
-    if (online) return;
+    if (online || lesson) return;
     const fresh = game.history().length <= (playerColor === "b" ? 1 : 0) || game.game_over();
     if (v === playerColor) { $("#colorNote").hidden = true; return; }
     if (fresh && !busy) newGame(); else $("#colorNote").hidden = false;
@@ -3334,6 +3553,8 @@ function initControls() {
   segInit("#shieldSeg", showShields ? "on" : "off", (v) => { showShields = v === "on"; render(); save(); });
   segInit("#seeSeg", showSee ? "on" : "off", (v) => { showSee = v === "on"; render(); save(); });
   segInit("#potSeg", showPotential ? "on" : "off", (v) => { showPotential = v === "on"; render(); save(); });
+  segInit("#iconsSeg", pieceIcons ? "on" : "off", (v) => { pieceIcons = v === "on"; applyPieceIcons(); save(); });
+  segInit("#namesSeg", showNames ? "on" : "off", (v) => { showNames = v === "on"; render(); save(); });
   segInit("#heatSeg", heatMode, (v) => { heatMode = v; render(); save(); });
   segInit("#bestSeg", showBest ? "on" : "off", (v) => { showBest = v === "on"; if (!showBest) { arrow = null; render(); } else maybeShowBest(); save(); });
   segInit("#soundSeg", soundOn ? "on" : "off", (v) => { soundOn = v === "on"; if (soundOn) { audio(); setTimeout(() => playClip("move"), 120); } save(); });
@@ -3477,11 +3698,11 @@ function takebackTarget() {
   return (t % 2 === 0 ? "w" : "b") === mine ? t : null;
 }
 function cutTo(len) {
-  while (game.history().length > len) game.undo();
+  const undone = takeBack(len);
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
   selected = null; targets = new Set(); crack = null;
-  render(); renderMoves(); updateStrips(); saveOnline(); onlineEval();
+  render(); animateBack(undone); renderMoves(); updateStrips(); saveOnline(); onlineEval();
 }
 function askTakeback() {
   if (!online || !online.live || online.over || game.game_over() || online.undoReq) return;
@@ -3728,7 +3949,7 @@ async function enterOnline(code, color, saved) {
   const h = game.history({ verbose: true }), last = h[h.length - 1];
   lastMove = last ? { from: last.from, to: last.to } : null;
   playerColor = play; flipped = saved && typeof saved.flipped === "boolean" ? saved.flipped : play === "b";
-  crack = game.in_checkmate() ? { fen: game.fen(), svg: crackSVG(), fresh: false } : null;
+  crack = game.in_checkmate() ? makeCrack(game.fen(), false) : null;
   setEval({ cp: 0, mate: null });
   $("#newBtn").hidden = true;
   saveOnline(); pushPresence();
@@ -3745,7 +3966,7 @@ function leaveOnline() {
   $("#newBtn").hidden = false;
   game.reset(); verdicts = {}; arrow = null; selected = null; targets = new Set(); lastMove = null; crack = null;
   restore();
-  if (game.in_checkmate()) crack = { fen: game.fen(), svg: crackSVG(), fresh: false };
+  if (game.in_checkmate()) crack = makeCrack(game.fen(), false);
   setEval({ cp: 0, mate: null });
   render(); renderMoves(); updateStrips(); refreshStatus(); renderOnline();
   const c = card(); c.innerHTML = `<header><span class="kind">Снова против Stockfish</span></header>`;
@@ -3874,6 +4095,828 @@ const confirmResign = { armed: false };
 })();
 setTimeout(() => { if (roomState === "wait") { roomState = "off"; renderOnline(); } }, 12000);
 
+// ---------- lesson: Scholar's mate (детский мат) ----------
+// Each variation is a tree. Mentor nodes ({san, say, short, arrows, marks, next}) are played by the mentor;
+// student nodes ({good, alt, bad, hint, target}) wait for the student. good[san] = {say, next?} moves the
+// line on (no next = variation passed); alt[san] = text, a playable move that is not the one being drilled
+// (taken back, no penalty); bad[san] = {reply, say}, the mentor punishes it. Unlisted moves are judged
+// on the board: a mate in one or a big Stockfish loss is punished, anything else is taken back.
+const LESSON_PASSES = 3;
+const LESSON = [
+  {
+    id: "classic", side: "b", title: "Классика: Сc4 и Фh5",
+    pre: [["e4", "Белые начинают e4: пешка занимает центр и открывает дорогу ферзю d1 и слону f1. Обе эти фигуры смотрят в сторону твоего короля — запомни это."], ["e5", "Твой ход: ответь e5. Пешка тоже занимает центр и открывает твоих ферзя и слона."], ["Bc4", "Сc4: слон нацелился на f7. Это самое слабое поле у чёрных — его защищает только король. Белые хотят добавить к слону ферзя и поставить мат на f7. Это и есть детский мат."], ["Nc6", "Твой ход: Кc6. Развивай коня: он защищает пешку e5 и смотрит в центр. И следи за белым ферзём — он пойдёт к f7."]],
+    intro: "Ты играешь чёрными. Белые вывели слона на c4: он смотрит на f7. Поле f7 — самое слабое у чёрных, его защищает только король. Следи, что будет делать ферзь.",
+    next: {
+      san: "Qh5", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+      say: "Ферзь прыгнул на h5. Теперь на f7 нацелены сразу две фигуры — ферзь и слон, а защищает его только король. Угроза: Фxf7 — мат. Как защитишься?",
+      short: "Фh5: ферзь и слон снова смотрят на f7. Защищайся.",
+      next: {
+        target: "f7",
+        do: "Что делать: сыграй g6. Пешка встанет между ферзём и полем f7 и сама нападёт на ферзя — ему придётся уйти.",
+        hint: "Нужен ход, который встанет между ферзём h5 и полем f7. Лучше, если он ещё и нападёт на ферзя. Посмотри на пешки королевского фланга.",
+        good: {
+          g6: {
+            say: "Отлично! Пешка g6 перекрыла ферзю дорогу на f7 и сама напала на него. Ферзю придётся уйти, а белые потеряют время.",
+            next: {
+              san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "Ферзь отступил на f3, но не сдался: по линии f он снова бьёт в f7, и слон c4 ему помогает. Опять угроза Фxf7 — мат! Это главная хитрость детского мата — второй заход.",
+              short: "Фf3: второй заход на f7. Что теперь?",
+              next: {
+                target: "f7",
+                do: "Что делать: Кf6. Конь встанет на линию f и закроет f7 от ферзя, а заодно разовьётся.",
+                hint: "Перекрой линию f фигурой, которую всё равно нужно развивать.",
+                good: {
+                  Nf6: {
+                    say: "Правильно! Конь f6 закрыл линию f и вышел в игру. Мата нет, а белый ферзь стоит на поле, которое нужно коню g1. Дальше спокойно играй Сg7 и 0-0 — у чёрных отличная позиция."
+                  }
+                },
+                alt: {
+                  Qf6: "Фf6 тоже закрывает f7, но ферзь занял поле коня, и после Фxf6 Кxf6 ничего не выиграно. Найди ход, который защищает и развивает фигуру.",
+                  Qe7: "Фe7 защищает f7, но ферзь мешает слону f8. Лучше защититься развитием лёгкой фигуры."
+                },
+                bad: {
+                  Bg7: { reply: "Qxf7#", say: "Сg7 — хороший ход вообще, но сейчас он не защищает f7. Фxf7 — мат. Сначала угроза, потом развитие!" },
+                  d6: { reply: "Qxf7#", say: "d6 открывает слона c8, но f7 остался под ударом. Фxf7 — мат." }
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          Qe7: "Фe7 тоже защищает и f7, и e5 — это рабочий ход, его мы разберём в варианте со слоном c5. Но здесь сильнее защита с нападением на ферзя. Найди её.",
+          Qf6: "Фf6 защищает f7, но ферзь занимает поле коня. Есть ход лучше: перекрой ферзя и сразу прогони его."
+        },
+        bad: {
+          Nf6: { reply: "Qxf7#", say: "Вот так и попадаются на детский мат! Конь f6 нападает на ферзя, но f7 остался беззащитным: Фxf7 — мат. Сначала защищай f7." },
+          Bc5: { reply: "Qxf7#", say: "Слон c5 развивается, но не защищает f7: Фxf7 — мат. Сначала нужно отбить угрозу." }
+        }
+      }
+    }
+  },
+  {
+    id: "early-h5", side: "b", title: "Ранний ферзь: 2.Фh5",
+    pre: [["e4", "Белые начинают e4: пешка занимает центр и открывает дорогу ферзю d1 и слону f1. Обе эти фигуры смотрят в сторону твоего короля — запомни это."], ["e5", "Твой ход: ответь e5. Пешка тоже занимает центр и открывает твоих ферзя и слона."]],
+    intro: "Другой порядок ходов: белые выводят ферзя уже на втором ходу, а слона — потом. Задача та же — не дать поставить мат на f7.",
+    next: {
+      san: "Qh5", arrows: [["h5", "e5", "t"]], marks: ["e5"],
+      say: "Ферзь на h5 сразу нападает на пешку e5. Слона на c4 пока нет, так что мата не будет, но пешку^me надо защитить. Каким ходом?",
+      short: "Фh5 нападает на e5. Защити пешку^me.",
+      next: {
+        target: "e5",
+        do: "Что делать: защити e5 конём — Кc6. Конь и пешку держит, и в игру выходит.",
+        hint: "Защити e5 фигурой, которую в дебюте всё равно надо развивать.",
+        good: {
+          Nc6: {
+            say: "Верно: конь c6 защищает e5 и развивается.",
+            next: {
+              san: "Bc4", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "А вот и слон на c4. Позиция та же, что в классическом варианте: ферзь и слон бьют в f7. Угроза Фxf7 — мат.",
+              short: "Сc4: угроза Фxf7 мат.",
+              next: {
+                target: "f7",
+                do: "Что делать: g6. Пешка перекроет ферзя h5 от f7 и нападёт на него.",
+                hint: "Пешка может и перекрыть ферзя, и напасть на него.",
+                good: {
+                  g6: {
+                    say: "Точно! g6 закрывает f7 и гонит ферзя.",
+                    next: {
+                      san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+                      say: "Ферзь возвращается на f3 — второй заход на f7.",
+                      short: "Фf3: снова на f7.",
+                      next: {
+                        target: "f7",
+                        do: "Что делать: Кf6 — закрой линию f конём.",
+                        hint: "Закрой линию f конём.",
+                        good: { Nf6: { say: "Отлично, ты отбил обе атаки. Белый ферзь вышел рано и только потерял время." } },
+                        alt: {
+                          Qf6: "Фf6 защищает, но занимает поле коня. Есть развивающий ход.",
+                          Qe7: "Защищает, но ферзь запирает слона f8. Развей коня."
+                        },
+                        bad: { Bg7: { reply: "Qxf7#", say: "Сначала угроза! Сg7 не защищает f7: Фxf7 — мат." } }
+                      }
+                    }
+                  }
+                },
+                alt: {
+                  Qe7: "Фe7 защищает f7, это можно. Но сильнее ход с нападением на ферзя.",
+                  Qf6: "Фf6 закрывает f7, но ферзь занимает поле коня. Найди ход пешкой."
+                },
+                bad: {
+                  Nf6: { reply: "Qxf7#", say: "Конь^me напал на ферзя, но f7 не защищён: Фxf7 — мат." }
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          d6: "d6 защищает e5, но запирает слона f8. Лучше защитить пешку развитием коня.",
+          Qe7: "Ферзь защищает, но выходить им так рано незачем. Защити e5 конём.",
+          Qf6: "Ферзь защищает e5, но рано выходит и занимает поле коня. Защити пешку конём."
+        },
+        bad: {
+          Nf6: { reply: "Qxe5+", say: "Кf6 нападает на ферзя, но пешка e5 падает с шахом: Фxe5+. Сначала защити e5." },
+          g6: { reply: "Qxe5+", say: "g6?? — ферзь берёт e5 с шахом и одновременно нападает на ладью h8. Вилка! Сначала защити пешку^me." }
+        }
+      }
+    }
+  },
+  {
+    id: "f3", side: "b", title: "Ферзь на f3",
+    pre: [["e4", "Белые начинают e4: пешка занимает центр и открывает дорогу ферзю d1 и слону f1. Обе эти фигуры смотрят в сторону твоего короля — запомни это."], ["e5", "Твой ход: ответь e5. Пешка тоже занимает центр и открывает твоих ферзя и слона."], ["Bc4", "Сc4: слон нацелился на f7. Это самое слабое поле у чёрных — его защищает только король. Белые хотят добавить к слону ферзя и поставить мат на f7. Это и есть детский мат."], ["Nc6", "Твой ход: Кc6. Развивай коня: он защищает пешку e5 и смотрит в центр. И следи за белым ферзём — он пойдёт к f7."]],
+    intro: "Ферзь может идти не на h5, а на f3. Там он спокойнее, но цель та же — пешка f7.",
+    next: {
+      san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+      say: "Фf3: ферзь бьёт по линии f, слон c4 — по диагонали. Угроза Фxf7 — мат. Чем защититься?",
+      short: "Фf3. Угроза на f7.",
+      next: {
+        target: "f7",
+        do: "Что делать: Кf6. Конь перекрывает линию f, и ферзь^op больше не видит f7.",
+        hint: "Закрой линию f, заодно развив фигуру.",
+        good: {
+          Nf6: {
+            say: "Правильно! Конь f6 перекрыл линию f. Против ферзя на f3 это лучший ответ.",
+            next: {
+              san: "Qb3", arrows: [["b3", "f7", "t"]], marks: ["f7"],
+              say: "Хитрый ход: ферзь перешёл на b3 и встал за слоном. Вдвоём они снова бьют f7 — угроза Сxf7+. Не мат, но пешку^me с шахом терять обидно. Защити f7 или напади на ферзя.",
+              short: "Фb3: ферзь со слоном снова на f7.",
+              next: {
+                target: "f7",
+                do: "Что делать: Кd4! Конь прыгает в центр и нападает на ферзя b3 и пешку c2. Ещё можно спокойно защитить f7 ходом Фe7.",
+                hint: "Конь c6 может прыгнуть на поле, где нападёт на ферзя. Или защити f7 ферзём^me.",
+                good: {
+                  Nd4: { say: "Отлично! Кd4 нападает на ферзя и на пешку c2. Белые опять тратят ход, а у чёрных отличная игра." },
+                  Qe7: { say: "Хорошо: ферзь e7 надёжно защищает f7. Дальше развивайся: Сc5, 0-0." }
+                },
+                alt: {
+                  Na5: "Кa5 нападает и на ферзя, и на слона^op — неплохо, но конь на краю доски стоит плохо. Найди прыжок в центр."
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          Qf6: "Фf6 тоже закрывает f7, но после Фxf6 Кxf6 ферзи разменяются, и белые ничего не потеряли. Лучше закрыть линию конём.",
+          Qe7: "Фe7 защищает f7, но ферзь мешает слону. Найди развивающий ход."
+        },
+        bad: {
+          Bc5: { reply: "Qxf7#", say: "Сc5 развивает слона^me, но f7 не защищён: Фxf7 — мат." },
+          d6: { reply: "Qxf7#", say: "d6 не помогает f7: Фxf7 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "bc5", side: "b", title: "Двойная угроза: Сc5 и Фh5", tc: "bw",
+    pre: [["e4", "Белые начинают e4: пешка занимает центр и открывает дорогу ферзю d1 и слону f1. Обе эти фигуры смотрят в сторону твоего короля — запомни это."], ["e5", "Твой ход: ответь e5. Пешка тоже занимает центр и открывает твоих ферзя и слона."], ["Bc4", "Сc4: слон нацелился на f7. Это самое слабое поле у чёрных — его защищает только король. Белые хотят добавить к слону ферзя и поставить мат на f7. Это и есть детский мат."], ["Bc5", "Твой ход: Сc5. Слон выходит активно и сам смотрит на f2 — у белых та же слабость. Но учти: пешку e5 теперь не защищает конь."]],
+    intro: "Твой слон^me ушёл на c5, и пешку e5 теперь не защищает конь^me. Значит, ферзь на h5 создаст сразу две угрозы.",
+    next: {
+      san: "Qh5", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"], ["h5", "e5", "t"]], marks: ["f7", "e5"],
+      say: "Фh5 — две угрозы: Фxf7 мат и Фxe5+ с шахом, после которого ферзь нападёт и на ладью h8, и на слона c5. Нужен один ход, который защищает сразу оба поля.",
+      short: "Фh5: две угрозы, f7 и e5.",
+      next: {
+        target: "f7",
+        do: "Что делать: Фe7. Ферзь встаёт рядом и с f7, и с e5 и защищает обе точки сразу.",
+        hint: "Только одна фигура может одним ходом встать рядом и с f7, и с e5. Это ферзь.",
+        good: {
+          Qe7: {
+            say: "Точно! Ферзь e7 защищает и f7, и e5. Обе угрозы отбиты.",
+            next: {
+              san: "Nf3", arrows: [["f3", "e5", "t"]], marks: ["e5"],
+              say: "Белые подтягивают коня: теперь на e5 нападают и конь, и ферзь. Но пешку^me защищает твой ферзь. Можно развиваться — а лучше развиваться с нападением на ферзя.",
+              short: "Кf3. Развивайся с темпом.",
+              next: {
+                target: "e5",
+                do: "Что делать: Кf6. Развиваешь коня и сразу нападаешь на ферзя h5.",
+                hint: "Какая фигура выходит в игру и сразу нападает на ферзя h5?",
+                good: {
+                  Nf6: { say: "Отлично! Конь f6 развивается и гонит ферзя. Он ничего не добился и уходит, а ты выиграл время." }
+                },
+                alt: {
+                  Nc6: "Кc6 — хорошее развитие и защищает e5. Но есть ход ещё сильнее: развитие с нападением на ферзя.",
+                  d6: "d6 надёжно защищает e5, но можно сыграть активнее — с нападением на ферзя."
+                }
+              }
+            }
+          }
+        },
+        alt: {
+          Qf6: "Фf6 тоже защищает обе точки, но ферзь занимает поле коня. Есть поле для ферзя^me удобнее."
+        },
+        bad: {
+          g6: { reply: "Qxe5+", say: "g6 спасает от мата, но Фxe5+ — шах, и следом ферзь возьмёт ладью h8 или слона c5. Здесь нужно защищать сразу два поля." },
+          Nf6: { reply: "Qxf7#", say: "Кf6 нападает на ферзя, но не защищает f7: Фxf7 — мат." },
+          Nc6: { reply: "Qxf7#", say: "Кc6 защитил e5, но про f7 ты забыл: Фxf7 — мат." },
+          d6: { reply: "Qxf7#", say: "d6 защищает e5, но f7 остался без защиты: Фxf7 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "d6", side: "b", title: "После d6: снова Фh5",
+    pre: [["e4", "Белые начинают e4: пешка занимает центр и открывает дорогу ферзю d1 и слону f1. Обе эти фигуры смотрят в сторону твоего короля — запомни это."], ["e5", "Твой ход: ответь e5. Пешка тоже занимает центр и открывает твоих ферзя и слона."], ["Bc4", "Сc4: слон нацелился на f7. Это самое слабое поле у чёрных — его защищает только король. Белые хотят добавить к слону ферзя и поставить мат на f7. Это и есть детский мат."], ["d6", "Твой ход: d6. Пешка защищает e5 и открывает слона c8. Ход надёжный, но f7 он не защищает — помни об этом."]],
+    intro: "Чёрные защитили e5 пешкой d6. Кажется, всё спокойно, но слабость f7 никуда не делась.",
+    next: {
+      san: "Qh5", arrows: [["h5", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+      say: "Фh5 — и снова угроза Фxf7 мат. Пешка d6 тут не помогает. Найди защиту.",
+      short: "Фh5. Угроза на f7.",
+      next: {
+        target: "f7",
+        do: "Что делать: g6 — перекрой ферзя и прогони его. Ещё годится Фe7: ферзь защищает f7.",
+        hint: "Как и в классике: пешкой перекрой ферзя и напади на него. Или защити f7 ферзём^me.",
+        good: {
+          g6: {
+            say: "Верно, g6 закрывает f7 и гонит ферзя.",
+            next: {
+              san: "Qf3", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "Второй заход: Фf3 и снова угроза на f7.",
+              short: "Фf3: снова на f7.",
+              next: {
+                target: "f7",
+                do: "Что делать: Кf6 — закрой линию f конём.",
+                hint: "Конь закрывает линию f.",
+                good: { Nf6: { say: "Правильно! Обе атаки отбиты, а белый ферзь стоит не на своём месте." } },
+                alt: {
+                  Qe7: "Фe7 защищает, но лучше развить коня.",
+                  Qf6: "Ферзь занимает поле коня. Развей коня."
+                },
+                bad: { Bg7: { reply: "Qxf7#", say: "Сg7 не защищает f7: Фxf7 — мат." } }
+              }
+            }
+          },
+          Qe7: { say: "Хорошо: ферзь e7 защищает f7. Позже вытеснишь ферзя ходом Кf6." },
+          Qd7: { say: "Можно и так: ферзь d7 защищает f7 по седьмой горизонтали. Правда, он запирает слона c8, так что позже его лучше переставить." }
+        },
+        alt: {
+          Qf6: "Фf6 защищает f7, но занимает поле коня. Есть ход лучше.",
+          Be6: "Сe6 перекрывает слона c4, но после Сxe6 fxe6 у чёрных сдвоенные пешки и открытый король. Защитись надёжнее."
+        },
+        bad: {
+          Nf6: { reply: "Qxf7#", say: "Классическая ловушка: Кf6 нападает на ферзя, но Фxf7 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "early-f3", side: "b", title: "Ранний ферзь: 2.Фf3",
+    pre: [["e4", "Белые начинают e4: пешка занимает центр и открывает дорогу ферзю d1 и слону f1. Обе эти фигуры смотрят в сторону твоего короля — запомни это."], ["e5", "Твой ход: ответь e5. Пешка тоже занимает центр и открывает твоих ферзя и слона."]],
+    intro: "Белые выводят ферзя на f3 сразу, а слона хотят поставить на c4 следующим ходом.",
+    next: {
+      san: "Qf3", arrows: [["f3", "f7", "t"]], marks: ["f7"],
+      say: "Ферзь на f3 уже смотрит на f7. Мата пока нет, но после Сc4 он будет. Лучше решить проблему заранее. Каким ходом?",
+      short: "Фf3. Подумай про f7 заранее.",
+      next: {
+        target: "f7",
+        do: "Что делать: Кf6. Конь закроет линию f заранее, и когда белый слон встанет на c4, мата не будет.",
+        hint: "Закрой линию f конём — это и развитие, и защита.",
+        good: {
+          Nf6: {
+            say: "Отлично! Конь f6 сразу закрыл линию f. Теперь белый слон на c4 мата не создаёт.",
+            next: {
+              san: "Bc4", arrows: [["c4", "f7", "t"]], marks: ["f7"],
+              say: "Слон c4 — но ферзь закрыт конём^me, так что f7 защищён королём. Спокойно развивайся: какой ход выведет фигуру и не даст белым никаких шансов?",
+              short: "Сc4. Развивайся.",
+              next: {
+                target: "f7",
+                do: "Что делать: Кc6. Обычное развитие: конь защищает e5 и смотрит в центр.",
+                hint: "Выведи коня b8 или слона f8. Например, конь на c6 защищает e5.",
+                good: {
+                  Nc6: { say: "Хорошо: конь c6 развит и защищает e5. Белым здесь нечем атаковать." },
+                  Bc5: { say: "Хорошо: слон c5 развит и смотрит на f2, скоро 0-0." },
+                  Be7: { say: "Скромно, но надёжно: слон e7 развит, скоро 0-0." }
+                }
+              }
+            }
+          },
+          Nc6: {
+            say: "Хорошее развитие, но f7 пока не прикрыт. Белые сыграют Сc4 — придётся защищаться.",
+            next: {
+              san: "Bc4", arrows: [["f3", "f7", "t"], ["c4", "f7", "t"]], marks: ["f7"],
+              say: "Вот и Сc4: угроза Фxf7 мат. Закрой линию f.",
+              short: "Сc4: угроза Фxf7 мат.",
+              next: {
+                target: "f7",
+                do: "Что делать: Кf6 — закрой линию f конём.",
+                hint: "Какая фигура может встать на линию f между ферзём и f7?",
+                good: { Nf6: { say: "Правильно! Линия f закрыта, мата нет." } },
+                alt: { Qf6: "Фf6 тоже закрывает, но лучше развить коня.", Qe7: "Защищает, но лучше развить коня." },
+                bad: { Bc5: { reply: "Qxf7#", say: "Сc5 не защищает f7: Фxf7 — мат." } }
+              }
+            }
+          }
+        },
+        alt: {
+          Qf6: "Ферзи разменяются — это не страшно, но ферзь на f6 занимает поле коня. Есть ход лучше.",
+          d6: "d6 сейчас не нужен: подумай, как закрыть линию f."
+        }
+      }
+    }
+  },
+  {
+    id: "w-h4", side: "w", title: "За белых: Фh4 и мат на f2",
+    pre: [["e4", "Твой ход: начни e4. Пешка займёт центр и откроет ферзя^me и слона f1."], ["e5", "Чёрные отвечают e5 — тоже в центр."], ["Bc4", "Твой ход: Сc4. Слон встаёт на активное поле и смотрит на f7."], ["Bc5", "Чёрные зеркалят: Сc5. Их слон нацелен на f2 — твоё самое слабое поле, его защищает только король. Если к слону присоединится ферзь, будет угроза мата."], ["Nc3", "Твой ход: Кc3. Конь развивается и защищает e4. А теперь следи за чёрным ферзём: он может прыгнуть на h4 или f6."]],
+    intro: "Теперь ты играешь белыми, а детский мат пробуют поставить тебе. У белых слабое поле — f2. Чёрный слон c5 уже смотрит на него.",
+    next: {
+      san: "Qh4", arrows: [["h4", "f2", "t"], ["c5", "f2", "t"]], marks: ["f2"],
+      say: "Чёрный ферзь вышел на h4. Ферзь и слон c5 бьют f2: угроза Фxf2 — мат. Ещё ферзь нападает на e4, но её защищает конь c3. Как защитишь f2?",
+      short: "Фh4: угроза Фxf2 мат.",
+      next: {
+        target: "f2",
+        do: "Что делать: g3. Пешка перекрывает диагональ h4–f2 и нападает на ферзя. Ещё можно защитить f2 ходом Фe2.",
+        hint: "Можно перекрыть диагональ h4–f2 пешкой и заодно напасть на ферзя. Или защитить f2 ферзём^me.",
+        good: {
+          g3: {
+            say: "Отлично! g3 закрывает диагональ и гонит ферзя.",
+            next: {
+              san: "Qf6", arrows: [["f6", "f2", "t"], ["c5", "f2", "t"]], marks: ["f2"],
+              say: "Ферзь перешёл на f6 и по линии f снова бьёт в f2 — опять угроза Фxf2 мат! Знакомый второй заход.",
+              short: "Фf6: снова на f2.",
+              next: {
+                target: "f2",
+                do: "Что делать: Кf3. Конь g1 закрывает линию f и развивается.",
+                hint: "Закрой линию f конём g1.",
+                good: {
+                  Nf3: { say: "Правильно! Конь f3 закрыл линию f и развился. Мата нет." },
+                  Qe2: { say: "Хорошо: ферзь e2 защищает f2. Дальше развивай коня g1." },
+                  Qf3: { say: "Тоже защита: предлагаешь размен ферзей. Это надёжно." }
+                },
+                bad: {
+                  d3: { reply: "Qxf2#", say: "d3 открывает слона^me, но f2 не защищён: Фxf2 — мат." }
+                }
+              }
+            }
+          },
+          Qe2: { say: "Хорошо: ферзь e2 защищает и f2, и e4. Дальше развивай коня g1 на f3 с нападением на ферзя." }
+        },
+        alt: {
+          Qf3: "Фf3 защищает f2, но ферзь займёт поле коня g1. Есть ход лучше.",
+          Nh3: "Кh3 защищает f2, но конь на краю стоит плохо. Найди лучшую защиту.",
+          Qe2: "Фe2 защищает f2 и e4. Но здесь ещё сильнее — прогнать ферзя пешкой."
+        },
+        bad: {
+          Nf3: { reply: "Qxf2#", say: "Ловушка! Кf3 нападает на ферзя, но не закрывает диагональ h4–f2: Фxf2 — мат." },
+          d3: { reply: "Qxf2#", say: "d3 не защищает f2: Фxf2 — мат." }
+        }
+      }
+    }
+  },
+  {
+    id: "w-f6", side: "w", title: "За белых: Фf6 и мат на f2",
+    pre: [["e4", "Твой ход: начни e4. Пешка займёт центр и откроет ферзя^me и слона f1."], ["e5", "Чёрные отвечают e5 — тоже в центр."], ["Bc4", "Твой ход: Сc4. Слон встаёт на активное поле и смотрит на f7."], ["Bc5", "Чёрные зеркалят: Сc5. Их слон нацелен на f2 — твоё самое слабое поле, его защищает только король."], ["d3", "Твой ход: d3. Пешка защищает e4 и открывает слона c1. Но f2 по-прежнему слабое — следи за чёрным ферзём."]],
+    intro: "Снова играешь белыми. Чёрные выводят ферзя на f6 — оттуда он бьёт по линии f.",
+    next: {
+      san: "Qf6", arrows: [["f6", "f2", "t"], ["c5", "f2", "t"]], marks: ["f2"],
+      say: "Ферзь f6 и слон c5 нацелены на f2: угроза Фxf2 мат. Защитись.",
+      short: "Фf6: угроза Фxf2 мат.",
+      next: {
+        target: "f2",
+        do: "Что делать: Кf3. Конь g1 закрывает линию f и развивается.",
+        hint: "Закрой линию f фигурой, которую всё равно надо развивать.",
+        good: {
+          Nf3: { say: "Правильно! Конь f3 закрыл линию f и развился. Теперь у белых хорошая игра." },
+          Qe2: { say: "Хорошо: ферзь e2 защищает f2. Следом развей коня g1." },
+          Qf3: { say: "Надёжно: предлагаешь размен ферзей, и атака чёрных пропадает." }
+        },
+        alt: {
+          Be3: "Сe3 закрывает слона c5 и защищает f2 — можно. Но проще закрыть линию f конём.",
+          Nh3: "Кh3 защищает f2, но конь на краю. Найди лучшее поле для коня."
+        },
+        bad: {
+          Nc3: { reply: "Qxf2#", say: "Кc3 развивает коня^me, но не тот: f2 без защиты, Фxf2 — мат." },
+          Bg5: { reply: "Qxf2#", say: "Сg5 нападает на ферзя, но f2 остался под ударом: Фxf2 — мат." }
+        }
+      }
+    }
+  }
+];
+
+const LESSON_KEY = "smart-chess-lesson-v1";
+let lessonProgress = { done: {}, exam: false };
+try { const p = JSON.parse(localStorage.getItem(LESSON_KEY) || "null"); if (p && p.done) lessonProgress = { done: p.done, exam: !!p.exam }; } catch (_) {}
+function saveLessonProgress() { try { localStorage.setItem(LESSON_KEY, JSON.stringify(lessonProgress)); } catch (_) {} }
+const lessonDone = (id) => Math.min(LESSON_PASSES, lessonProgress.done[id] || 0);
+const lessonAllDone = () => LESSON.every((v) => lessonDone(v.id) >= LESSON_PASSES);
+const lsSleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const lsAlive = (t) => lesson && lesson.token === t;
+const mainMove = (node) => Object.keys(node.good)[0];
+
+// Piece names in the mentor's text become piece pictures: "ферзю d1" → [white queen] d1.
+const PIECE_WORD_RE = /(?<![А-Яа-яЁё])(корол(?:ь|я|ю|ём|ем|е)|ферз(?:ь|я|ю|ём|ем|е|и|ей)|ладь(?:я|и|е|ю|ёй|ей)|слон(?:а|у|ом|е|ы|ов)?|кон(?:ь|я|ю|ём|ем|е|и|ей)|пеш(?:ка|ки|ке|ку|кой|ек|ками|кам))(?![А-Яа-яЁё])(\^(?:me|op))?((?:\s|&nbsp;)?(?:[a-h][1-8](?![0-9]))?)/gi;
+const WORD_TYPE = { "кор": "k", "фер": "q", "лад": "r", "сло": "b", "кон": "n", "пеш": "p" };
+function pieceWordColor(type, sq, before, hint, word, mark) {
+  const opp = playerColor === "w" ? "b" : "w";
+  if (mark) return mark === "^me" ? playerColor : opp;
+  if (sq) {
+    const p = game.get(sq);
+    if (p && p.type === type) return p.color;
+    const h = game.history({ verbose: true });
+    for (let i = h.length - 1; i >= 0; i--) if (h[i].piece === type && (h[i].to === sq || h[i].from === sq)) return h[i].color;
+    const start = new Chess().get(sq);
+    if (start && start.type === type) return start.color;
+  }
+  if (type === "k") return playerColor; // in the lesson an unnamed king is always the student's own
+  const near = before.slice(-28).toLowerCase();
+  if (/(тво|сво)[а-яё]*\s+[а-яё]*\s*$/.test(near)) return playerColor;
+  if (/бел[а-яё]*\s+[а-яё]*\s*$/.test(near)) return "w";
+  if (/ч[её]рн[а-яё]*\s+[а-яё]*\s*$/.test(near)) return "b";
+  const base = hint || playerColor;
+  // In the student's own lines the queen being blocked, chased or attacked is the opponent's: "перекрой ферзя", "нападёт на ферзя".
+  if (type === "q" && base === playerColor && !/^ферз(ь|и)$/i.test(word)) return opp;
+  return base;
+}
+function lessonRich(el, text, color) {
+  setRich(el, text, color);
+  const plain = el.innerHTML.replace(/\^(?:me|op)/g, "");
+  el._plain = plain;
+  el._icons = el.innerHTML.replace(PIECE_WORD_RE, (m, word, mark, tail, off, all) => {
+    const type = WORD_TYPE[word.slice(0, 3).toLowerCase()];
+    const sq = (tail.match(/[a-h][1-8]/) || [])[0];
+    const c = pieceWordColor(type, sq, all.slice(0, off).replace(/<[^>]*>/g, ""), color, word, mark);
+    return `<span class="mi p-${c}${type}" role="img" aria-label="${word}" title="${word}"></span>${tail}`;
+  });
+  el.innerHTML = pieceIcons ? el._icons : el._plain;
+}
+// Settings toggle: swap every mentor message (and the title) between words and icons in place.
+function applyPieceIcons() {
+  document.querySelectorAll("#lessonPanel .ls-msg, #lessonPanel .ls-t, #lsTitle").forEach((el) => {
+    if (el._icons != null) el.innerHTML = pieceIcons ? el._icons : el._plain;
+  });
+}
+// Variation titles: move codes are the opponent's unless `tc` lists each one's colour.
+function lessonTitle(el, v, extra) {
+  const opp = v.side === "w" ? "b" : "w", cols = v.tc || "";
+  let k = 0;
+  lessonRich(el, v.title + (extra || ""), opp);
+  const fix = (h) => { k = 0; return h.replace(/p-([wb])([kqrbnp])(?=" role="img" aria-label="(?:Кр|Ф|Л|С|К)")/g, (m, c, t) => `p-${cols[k++] || opp}${t}`); };
+  el._icons = fix(el._icons); el._plain = fix(el._plain);
+  el.innerHTML = pieceIcons ? el._icons : el._plain;
+}
+function lessonSay(text, cls, color) {
+  const box = $("#lsLog");
+  box.querySelectorAll(".ls-msg.now").forEach((el) => el.classList.remove("now"));
+  const p = document.createElement("p");
+  p.className = "ls-msg now " + (cls || "");
+  lessonRich(p, text, color);
+  box.appendChild(p);
+  while (box.children.length > 6) box.firstChild.remove();
+  box.scrollTop = box.scrollHeight;
+  return p;
+}
+function lessonButtons(list) {
+  const row = $("#lsTools"); row.innerHTML = "";
+  list.forEach(([text, cls, fn, id]) => { const b = btnEl(text, cls, fn); if (id) b.id = id; row.append(b); });
+}
+function lessonPlayTools() {
+  const tools = [];
+  if (!lesson.exam) tools.push(["Подсказка", "", lessonHint, "lsHint"]);
+  tools.push(["↶ Ход назад", "", lessonUndo, "lsUndo"], ["Начать вариант заново", "", () => lessonStart(lesson.v, true)], ["К списку вариантов", "", lessonMenu]);
+  lessonButtons(tools);
+  const h = $("#lsHint"); if (h) h.disabled = !lesson.await;
+}
+function lessonHeader() {
+  const v = lesson && lesson.v;
+  if (v) lessonTitle($("#lsTitle"), v); else $("#lsTitle").textContent = "Защита от детского мата";
+  let sub = "";
+  if (v && lesson.exam) sub = `Экзамен: осталось ${lesson.queue.length + 1} из ${LESSON.length}. Без подсказок.`;
+  else if (v) sub = `Повтор ${lesson.level + 1} из ${LESSON_PASSES}: ` + ["наставник говорит, что делать, и показывает стрелками", "наставник подсказывает словами, без стрелок", "сам, без подсказок"][lesson.level];
+  $("#lsSub").textContent = sub;
+  $("#lsSub").hidden = !sub;
+}
+function lessonMenu() {
+  lesson.token++; lesson.v = null; lesson.node = null; lesson.await = false; lesson.retry = false; lesson.preWant = null; lesson.preDone = null; lesson.arrows = []; lesson.marks = [];
+  lesson.exam = false;
+  lessonHeader();
+  $("#lsLog").innerHTML = "";
+  const list = $("#lsList"); list.innerHTML = ""; list.hidden = false;
+  LESSON.forEach((v, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "ls-item";
+    const n = lessonDone(v.id);
+    b.innerHTML = `<span class="ls-n">${i + 1}</span><span class="ls-t"></span><span class="ls-dots" aria-label="пройдено ${n} из ${LESSON_PASSES}">${"<i class=on></i>".repeat(n)}${"<i></i>".repeat(LESSON_PASSES - n)}</span>`;
+    lessonTitle(b.querySelector(".ls-t"), v, v.side === "w" ? " · белыми" : " · чёрными");
+    b.addEventListener("click", () => lessonStart(v));
+    list.appendChild(b);
+  });
+  const total = LESSON.reduce((s, v) => s + lessonDone(v.id), 0);
+  const all = LESSON.length * LESSON_PASSES;
+  lessonSay(total === 0
+    ? `Детский мат — это быстрый мат на 3–4 ходу: ферзь и слон вместе бьют по слабому полю f7 (или f2, если ты играешь белыми). Мы разберём ${LESSON.length} вариантов. Каждый пройдём ${LESSON_PASSES} раза: первый — с моими объяснениями и стрелками, потом сам. В конце экзамен вперемешку.`
+    : lessonProgress.exam ? "Урок пройден, и экзамен сдан! Можно повторить любой вариант или сдать экзамен ещё раз."
+    : `Пройдено ${total} из ${all} повторов. Продолжим?`);
+  const nextV = LESSON.find((v) => lessonDone(v.id) < LESSON_PASSES);
+  const tools = [];
+  if (nextV) tools.push([total ? "Продолжить" : "Начать урок", "primary", () => lessonStart(nextV)]);
+  tools.push(["Экзамен", nextV ? "" : "primary", lessonExam]);
+  if (total) tools.push(["Сбросить прогресс", "", () => { lessonProgress = { done: {}, exam: false }; saveLessonProgress(); lessonMenu(); }]);
+  tools.push(["Выйти из урока", "", lessonExit]);
+  lessonButtons(tools);
+  game.reset(); lastMove = null; playerColor = "b"; flipped = true; crack = null;
+  setEval({ cp: 0, mate: null });
+  render(); renderMoves(); refreshStatus();
+}
+function lessonEnter() {
+  if (lesson) return;
+  if (online) return;
+  if (!$("#sidePick").hidden && sidePickCancel) sidePickCancel();
+  gen++; engine.stop(); busy = false;
+  lesson = {
+    token: 0, stash: { pgn: game.pgn(), playerColor, flipped, verdicts, lastMove },
+    v: null, node: null, await: false, arrows: [], marks: [], exam: false, queue: []
+  };
+  selected = null; targets = new Set(); arrow = null; verdicts = {};
+  document.body.classList.add("in-lesson");
+  $("#lessonPanel").hidden = false;
+  lessonMenu();
+  $("#lessonPanel").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+function lessonExit() {
+  if (!lesson) return;
+  const s = lesson.stash;
+  lesson.token++; lesson = null;
+  document.body.classList.remove("in-lesson");
+  $("#lessonPanel").hidden = true;
+  gen++; cache.clear();
+  game.reset(); if (s.pgn) game.load_pgn(s.pgn);
+  playerColor = s.playerColor; flipped = s.flipped; verdicts = s.verdicts; lastMove = s.lastMove;
+  selected = null; targets = new Set(); arrow = null;
+  render(); renderMoves(); refreshStatus();
+  if (!engineReady || game.game_over()) return;
+  if (game.turn() !== playerColor) engineOpens(); else analyze(game.fen());
+}
+function lessonExam() {
+  const ids = LESSON.map((v) => v.id);
+  for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+  lesson.exam = true;
+  lesson.queue = ids.slice(1);
+  lessonStart(LESSON.find((v) => v.id === ids[0]), true);
+}
+// Plays one move by the lesson script (pre-moves, mentor moves, punishments).
+function lessonPlay(san) {
+  const mv = game.move(san);
+  if (!mv) return null;
+  lastMove = { from: mv.from, to: mv.to };
+  render(); animateMove(mv); playSound(mv); crackKing(); renderMoves();
+  if (engineReady && !game.game_over()) analyze(game.fen()).catch(() => {}); else if (game.game_over()) setEval(terminalEval().score);
+  return mv;
+}
+async function lessonStart(v, examStart) {
+  if (!lesson) return;
+  if (!examStart) lesson.exam = false;
+  const t = ++lesson.token;
+  if (lesson.preDone) lesson.preDone();
+  Object.assign(lesson, { v, node: null, preWant: null, preDone: null, await: false, retry: false, passed: false, stack: [], dirty: false, hints: 0, tries: 0, arrows: [], marks: [] });
+  // Level 0: the mentor says what to do and draws it; 1: hints in words, no arrows; 2 (and the exam): on your own.
+  lesson.level = lesson.exam ? 2 : Math.min(2, lessonDone(v.id));
+  lesson.guided = lesson.level === 0;
+  lesson.shown = new Set();
+  $("#lsList").hidden = true;
+  $("#lsLog").innerHTML = "";
+  lessonHeader();
+  playerColor = v.side; flipped = v.side === "b";
+  game.reset(); lastMove = null; selected = null; targets = new Set(); arrow = null; crack = null;
+  setEval({ cp: 0, mate: null });
+  render(); renderMoves(); refreshStatus();
+  lessonPlayTools();
+  const side = v.side === "w" ? "Ты играешь белыми." : "Ты играешь чёрными.";
+  if (lesson.exam) lessonSay(`Экзамен. ${side} Дебют разыгрываешь сам, а потом не дай поставить мат.`);
+  else lessonSay(side + [" Сначала я буду объяснять каждый ход и показывать стрелками, что делать.", " В этот раз подсказываю только словами, без стрелок.", " Теперь всё сам: и дебют, и защиту. Подсказка — только по кнопке, но тогда повтор не засчитается."][lesson.level]);
+  await lsSleep(400);
+  if (lsAlive(t)) lessonRunPre(t);
+}
+// Plays the opening from wherever the board is now: the opponent's moves by itself, the student's by hand.
+async function lessonRunPre(t) {
+  const v = lesson.v;
+  lesson.stack = [];
+  for (const [san, say] of v.pre.slice(game.history().length)) {
+    if (!lsAlive(t)) return;
+    if (game.turn() === playerColor) {
+      // The student's own opening moves, played by hand: told and drawn, then only told, then not at all.
+      const m = game.move(san); game.undo();
+      lesson.preWant = san; lesson.await = true;
+      lesson.arrows = lesson.level === 0 ? [{ from: m.from, to: m.to, tone: "h" }] : [];
+      if (lesson.level < 2 && say) lessonSay(say, "", m.color);
+      const hb = $("#lsHint"); if (hb) hb.disabled = false;
+      render(); refreshStatus();
+      await new Promise((res) => { lesson.preDone = res; });
+      if (!lsAlive(t)) return;
+    } else {
+      const mv = lessonPlay(san);
+      if (mv && lesson.level < 2 && say) lessonSay(say, "", mv.color);
+      await lsSleep(lesson.level < 2 ? 900 : 300);
+    }
+    await lsSleep(420);
+  }
+  if (!lsAlive(t)) return;
+  if (lesson.level === 0 && v.intro) { lessonSay(v.intro, "", v.side === "w" ? "b" : "w"); await lsSleep(900); if (!lsAlive(t)) return; }
+  lessonMentor(v.next, t);
+}
+async function lessonMentor(node, t) {
+  lesson.await = false; refreshStatus();
+  await lsSleep(500);
+  if (!lsAlive(t)) return;
+  // Arrows go in before the move so the move's own render draws them: a second render would cut the slide short.
+  const show = lesson.level === 0, sn = node.next;
+  const answer = show ? (() => { const c = new Chess(game.fen()); c.move(node.san); return c.move(mainMove(sn)); })() : null;
+  lesson.arrows = show ? (node.arrows || []).map(([from, to, tone]) => ({ from, to, tone })) : [];
+  if (answer) lesson.arrows.push({ from: answer.from, to: answer.to, tone: "h" });
+  lesson.marks = show ? node.marks || [] : [];
+  lesson.mentorArrows = lesson.arrows;
+  const mv = lessonPlay(node.san);
+  if (!mv) return;
+  lessonSay(lesson.level < 2 ? node.say : (node.short || `${ru(mv.san)}. Твой ход.`), "", mv.color);
+  if (lesson.level === 0 && sn.do) { lessonSay(sn.do + " Зелёная стрелка показывает этот ход.", "hint", playerColor); lesson.shown.add("do"); }
+  if (lesson.level === 1 && sn.hint) { lessonSay("Подсказка: " + sn.hint, "hint", playerColor); lesson.shown.add("hint"); }
+  lesson.node = sn; lesson.ply = game.history().length; lesson.tries = 0;
+  lesson.stack.push({ node: sn, ply: lesson.ply, arrows: lesson.arrows, marks: lesson.marks });
+  lesson.await = true;
+  lessonPlayTools();
+  refreshStatus();
+}
+function lessonHint() {
+  if (!lesson || !lesson.await) return;
+  if (lesson.level === 2 && !lesson.exam) lesson.dirty = true;
+  lesson.hints++;
+  if (lesson.preWant) {
+    const m = game.move(lesson.preWant); if (!m) return; game.undo();
+    lesson.arrows = [{ from: m.from, to: m.to, tone: "h" }];
+    lessonSay(`Подсказка: в этом варианте здесь играем ${ru(m.san)}.`, "hint", m.color);
+    return render();
+  }
+  if (!lesson.node) return;
+  const node = lesson.node;
+  for (const k of ["hint", "do"]) {
+    if (node[k] && !lesson.shown.has(k)) { lesson.shown.add(k); lessonSay(k === "hint" ? "Подсказка: " + node.hint : node.do, "hint", playerColor); return; }
+  }
+  const m = game.move(mainMove(node)); if (!m) return;
+  game.undo();
+  lesson.arrows = [{ from: m.from, to: m.to, tone: "h" }];
+  lessonSay(`Стрелка на доске показывает ход ${ru(m.san)}.`, "hint", m.color);
+  render();
+}
+// Ctrl+Z / «Ход назад»: back to the student's previous decision (a defence move or an opening move).
+function lessonUndo() {
+  if (!lesson || !lesson.v || lesson.passed) return;
+  if (lesson.retry) return lessonRetry(lesson.token);
+  if (!lesson.await) return; // the mentor is moving
+  let prev = null, undone = [];
+  if (!lesson.preWant && lesson.node) { lesson.stack.pop(); prev = lesson.stack[lesson.stack.length - 1] || null; }
+  const t = ++lesson.token;
+  if (lesson.preDone) lesson.preDone = null;
+  lesson.preWant = null; lesson.retry = false; selected = null; targets = new Set();
+  if (prev) {
+    undone = takeBack(prev.ply);
+    Object.assign(lesson, { node: prev.node, ply: prev.ply, tries: 0, arrows: prev.arrows, marks: prev.marks, mentorArrows: prev.arrows, await: true });
+    lesson.shown = new Set();
+  } else {
+    // Back into the opening: to the student's last opening move before where the board is now.
+    const me = lesson.v.side === "w" ? 0 : 1, len = Math.min(game.history().length, lesson.v.pre.length);
+    let idx = -1;
+    for (let i = len - 1; i >= 0; i--) if (i % 2 === me) { idx = i; break; }
+    if (idx < 0) return;
+    undone = takeBack(idx);
+    Object.assign(lesson, { node: null, arrows: [], marks: [], await: false, stack: [] });
+  }
+  const h = game.history({ verbose: true }), last = h[h.length - 1];
+  lastMove = last ? { from: last.from, to: last.to } : null; crack = null;
+  lessonSay("Ход отменён.", "alt");
+  lessonPlayTools();
+  if (prev) render(); else lessonRunPre(t); // the opening runner draws the board itself (its arrow included)
+  animateBack(undone); renderMoves(); refreshStatus();
+  if (engineReady) analyze(game.fen()).catch(() => {});
+}
+function mateInOne() {
+  for (const m of game.moves({ verbose: true })) { game.move(m); const x = game.in_checkmate(); game.undo(); if (x) return m.san; }
+  return null;
+}
+// Back to the position where the student has to find the move.
+function lessonRetry(t) {
+  if (!lsAlive(t)) return;
+  const undone = takeBack(lesson.ply);
+  const h = game.history({ verbose: true }), last = h[h.length - 1];
+  lastMove = last ? { from: last.from, to: last.to } : null; crack = null;
+  lesson.await = true; lesson.retry = false;
+  lesson.arrows = lesson.guided ? (lesson.mentorArrows || []) : [];
+  lessonPlayTools();
+  render(); animateBack(undone); renderMoves(); refreshStatus();
+  if (engineReady) analyze(game.fen()).catch(() => {});
+}
+async function lessonPunish(t, reply, text, color) {
+  lesson.dirty = true; lesson.tries++; lesson.retry = true;
+  await lsSleep(550);
+  if (!lsAlive(t)) return;
+  lessonPlay(reply);
+  lessonSay(text, "bad", color);
+  if (lesson.tries >= 2 && !lesson.exam && lesson.node.hint) lessonSay("Подсказка: " + lesson.node.hint, "hint");
+  lessonButtons([["Попробовать ещё раз", "primary", () => lessonRetry(t)], ["К списку вариантов", "", lessonMenu]]);
+  refreshStatus();
+}
+async function lessonMove(from, to, promotion, anim) {
+  const t = lesson.token, node = lesson.node, fenBefore = game.fen();
+  const mv = game.move({ from, to, promotion });
+  if (!mv) return deselect();
+  if (lesson.preWant) {
+    selected = null; targets = new Set();
+    if (mv.san !== lesson.preWant) {
+      game.undo();
+      const w = game.move(lesson.preWant); game.undo();
+      lesson.arrows = [{ from: w.from, to: w.to, tone: "h" }]; render();
+      lessonSay(`В этом варианте дебют такой: сыграй ${ru(lesson.preWant)} — по зелёной стрелке.`, "hint", mv.color);
+      return;
+    }
+    lastMove = { from, to }; lesson.await = false; lesson.arrows = [];
+    const hb = $("#lsHint"); if (hb) hb.disabled = true;
+    const done = lesson.preDone; lesson.preWant = null; lesson.preDone = null;
+    render(); if (anim) animateMove(mv); playSound(mv); renderMoves(); refreshStatus();
+    if (engineReady) analyze(game.fen()).catch(() => {});
+    return done && done();
+  }
+  selected = null; targets = new Set(); lastMove = { from, to };
+  lesson.arrows = []; lesson.await = false;
+  const h = $("#lsHint"); if (h) h.disabled = true;
+  render(); if (anim) animateMove(mv); playSound(mv); renderMoves(); refreshStatus();
+  const san = mv.san, opp = mv.color === "w" ? "b" : "w";
+  if (node.good[san]) {
+    const g = node.good[san];
+    lessonSay(g.say, "good", mv.color);
+    if (engineReady) analyze(game.fen()).catch(() => {});
+    if (g.next) return lessonMentor(g.next, t);
+    return lessonPassed(t);
+  }
+  if (node.alt && node.alt[san]) {
+    lessonSay(node.alt[san], "alt", mv.color);
+    await lsSleep(1800);
+    return lessonRetry(t);
+  }
+  if (node.bad && node.bad[san]) return lessonPunish(t, node.bad[san].reply, node.bad[san].say, opp);
+  const mate = mateInOne();
+  if (mate) {
+    const where = node.target || (mv.color === "w" ? "f2" : "f7");
+    return lessonPunish(t, mate, `${ru(san)} не спасает: ${ru(mate).replace("#", "")} — мат. Нужно защитить поле ${where} или перекрыть дорогу к нему.`, opp);
+  }
+  if (engineReady) {
+    lessonSay("Мата нет. Проверяю ход движком…", "wait");
+    try {
+      const before = await analyze(fenBefore), after = await analyze(game.fen());
+      if (!lsAlive(t)) return;
+      const P = mv.color === "w" ? 1 : -1;
+      const loss = (scoreNum(before.score) - scoreNum(after.score)) * P;
+      $("#lsLog").lastChild && $("#lsLog").lastChild.classList.contains("wait") && $("#lsLog").lastChild.remove();
+      if (loss >= 150 && after.bestmove) {
+        const reply = game.move(uciObj(after.bestmove)); game.undo();
+        if (reply) return lessonPunish(t, reply.san, `Мата нет, но после ${ru(reply.san)} ты теряешь материал (оценка ${fmtScore(after.score)}). Найди ход, который защищает и ничего не отдаёт.`, opp);
+      }
+    } catch (_) { if (!lsAlive(t)) return; }
+  }
+  lessonSay(`${ru(san)} — мата нет, так играть можно. Но в этом упражнении есть ход сильнее. Попробуй найти его.`, "alt", mv.color);
+  await lsSleep(1800);
+  lessonRetry(t);
+}
+function lessonPassed(t) {
+  const v = lesson.v;
+  lesson.await = false; lesson.node = null; lesson.arrows = []; lesson.marks = []; lesson.passed = true;
+  setTimeout(() => { if (lsAlive(t)) render(); }, 320); // after the last move has slid into place
+  refreshStatus();
+  const clean = !lesson.dirty;
+  let note;
+  if (lesson.exam) {
+    if (!clean) lesson.queue.push(v.id);
+    note = clean ? "Вариант сдан." : "С ошибкой — этот вариант ещё вернётся в конце экзамена.";
+  } else if (clean) {
+    lessonProgress.done[v.id] = lessonDone(v.id) + 1; saveLessonProgress();
+    const n = lessonDone(v.id);
+    note = n >= LESSON_PASSES ? `Вариант выучен: ${n} из ${LESSON_PASSES}!` : `Засчитано: ${n} из ${LESSON_PASSES}.`;
+  } else note = lesson.hints && lesson.level === 2 && !lesson.tries ? "С подсказкой повтор не засчитан — давай ещё раз сам." : "Были ошибки, поэтому повтор не засчитан. Давай ещё раз.";
+  lessonSay(note, clean ? "good" : "alt");
+  lessonHeader();
+  let next = null, label = "Дальше";
+  if (lesson.exam) {
+    const id = lesson.queue.shift();
+    if (id) next = () => lessonStart(LESSON.find((x) => x.id === id), true);
+    else {
+      lessonProgress.exam = true; saveLessonProgress();
+      lessonSay("Экзамен сдан! Ты знаешь все варианты детского мата и умеешь от них защищаться. Теперь его не боишься — играй смело.", "good");
+      playClip("notify");
+      lessonButtons([["К списку вариантов", "primary", lessonMenu], ["Выйти из урока", "", lessonExit]]);
+      return;
+    }
+  } else if (lessonDone(v.id) < LESSON_PASSES) { next = () => lessonStart(v, true); label = "Повторить ещё раз"; }
+  else {
+    const nv = LESSON.find((x) => lessonDone(x.id) < LESSON_PASSES);
+    if (nv) { next = () => lessonStart(nv, true); label = "Следующий вариант"; }
+    else { next = lessonExam; label = "К экзамену"; lessonSay("Все варианты пройдены по " + LESSON_PASSES + " раза. Осталось сдать экзамен: варианты вперемешку, без подсказок.", "good"); }
+  }
+  lessonButtons([[label, "primary", next], ["К списку вариантов", "", lessonMenu]]);
+}
+function lessonStatus() {
+  const el = $("#status");
+  if (!lesson.v) return setStatus("Урок: выберите вариант");
+  if (game.in_checkmate()) { setStatus("Мат. Попробуйте ещё раз."); el.classList.add("end"); return; }
+  if (lesson.retry) return setStatus("Ошибка. Нажмите «Попробовать ещё раз»");
+  if (lesson.preWant) return setStatus(lesson.level === 0 ? `Ваш ход: ${ru(lesson.preWant)} (по стрелке)` : lesson.level === 1 ? `Ваш ход: ${ru(lesson.preWant)}` : "Ваш ход: разыграй дебют");
+  if (lesson.await) return setStatus(`Ваш ход (${lesson.v.side === "w" ? "белые" : "чёрные"})${game.in_check() ? ". Шах!" : ""}`);
+  if (lesson.node === null && !lesson.await && game.history().length > lesson.v.pre.length) return setStatus("Вариант пройден");
+  setStatus("Наставник ходит", true);
+}
+
 // ---------- boot ----------
 function restore() {
   let s = null;
@@ -3887,6 +4930,8 @@ function restore() {
   if (typeof s.showShields === "boolean") showShields = s.showShields;
   if (typeof s.showSee === "boolean") showSee = s.showSee;
   if (typeof s.showPotential === "boolean") showPotential = s.showPotential;
+  if (typeof s.showNames === "boolean") showNames = s.showNames;
+  if (typeof s.pieceIcons === "boolean") pieceIcons = s.pieceIcons;
   // prefs v2: the field map starts switched off, also for saves made before that default.
   if (s.v >= 2 && ["sum", "table", "off"].includes(s.heatMode)) heatMode = s.heatMode;
   if (s.playerColor === "w" || s.playerColor === "b") playerColor = pendingColor = s.playerColor;
@@ -3901,7 +4946,8 @@ function restore() {
   return false;
 }
 const resumed = restore();
-if (game.in_checkmate()) crack = { fen: game.fen(), svg: crackSVG(), fresh: false };
+if (game.in_checkmate()) crack = makeCrack(game.fen(), false);
+loadKingMasks();
 initControls();
 welcome();
 if (resumed) { const c = card(); c.innerHTML = `<header><span class="kind">Партия продолжается</span></header>`; para(c, "meta", "Я восстановил вашу последнюю партию в этом браузере. Чтобы начать заново, нажмите «Новая партия»."); }
@@ -3910,7 +4956,7 @@ render(); renderMoves(); refreshStatus();
 if (!resumed && !(typeof linkInvite !== "undefined" && linkInvite)) {
   let hasOnline = false;
   try { hasOnline = !!localStorage.getItem(ONLINE_KEY); } catch (_) {}
-  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
+  if (!hasOnline) pickSide("За кого играем?", false).then((c) => { if (online || lesson || !c) return; if (c !== playerColor || game.history().length) { pendingColor = c; paintColor(c); newGame(); } });
 }
 
 engine.start().then(async (ok) => {
@@ -3921,6 +4967,7 @@ engine.start().then(async (ok) => {
   }
   engineReady = true; busy = false;
   updateStrips();
+  if (lesson) return refreshStatus();
   if (game.game_over()) { setEval(terminalEval().score); refreshStatus(); return; }
   if (online) { onlineEval(); return refreshStatus(); }
   if (game.turn() !== playerColor) engineOpens();
