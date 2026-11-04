@@ -2497,15 +2497,49 @@ function breakKing(c, col) {
     const L = Math.hypot(x1 - x0, y1 - y0) || 1;
     return p.concat([[x1 + (x1 - x0) / L * 220, y1 + (y1 - y0) / L * 220]]);
   };
-  const polys = mains.map((m, i) => {
-    const a = ray(m), b = ray(mains[(i + 1) % mains.length]);
-    const tipA = a[a.length - 1], tipB = b[b.length - 1];
-    const aA = Math.atan2(tipA[1] - c.oy, tipA[0] - c.ox);
-    let aB = Math.atan2(tipB[1] - c.oy, tipB[0] - c.ox);
-    while (aB <= aA) aB += Math.PI * 2;
-    const arc = [];
-    for (let k = 1; k < 8; k++) { const t = aA + (aB - aA) * k / 8; arc.push([c.ox + Math.cos(t) * 260, c.oy + Math.sin(t) * 260]); }
-    return a.concat(arc, b.slice().reverse().slice(0, -1));
+  // Concrete crumbles: besides the cracks themselves, each wedge snaps across into rings, and a wide wedge splits again.
+  const rays = [];
+  mains.forEach((m, i) => {
+    rays.push(ray(m));
+    const n = mains[(i + 1) % mains.length];
+    let gap = n.ang - m.ang; if (gap <= 0) gap += Math.PI * 2;
+    for (let k = 1, parts = Math.round(gap / .7); k < parts; k++) {
+      const ang = m.ang + gap * k / parts + (Math.random() - .5) * .25, pts = [[c.ox, c.oy]];
+      for (let r = 12; r <= 300; r += 12) { const t = ang + (Math.random() - .5) * .18; pts.push([c.ox + Math.cos(t) * r, c.oy + Math.sin(t) * r]); }
+      rays.push(pts);
+    }
+  });
+  const angAt = (pt) => Math.atan2(pt[1] - c.oy, pt[0] - c.ox);
+  const dist = (pt) => Math.hypot(pt[0] - c.ox, pt[1] - c.oy);
+  const cross = (r, R) => { // the first point where a ray reaches radius R, and where along the ray that is
+    for (let i = 1; i < r.length; i++) {
+      const d0 = dist(r[i - 1]), d1 = dist(r[i]);
+      if (d1 >= R) { const t = d1 > d0 ? (R - d0) / (d1 - d0) : 1; return { i, pt: [r[i - 1][0] + (r[i][0] - r[i - 1][0]) * t, r[i - 1][1] + (r[i][1] - r[i - 1][1]) * t] }; }
+    }
+    return { i: r.length, pt: r[r.length - 1] };
+  };
+  const span = (r, R0, R1) => { // the stretch of a ray between two radii
+    if (R0 <= 0) { const e = cross(r, R1); return r.slice(0, e.i).concat([e.pt]); }
+    const s0 = cross(r, R0), e = cross(r, R1);
+    return [s0.pt].concat(r.slice(s0.i, e.i), [e.pt]);
+  };
+  const rings = [0, 12 + Math.random() * 5, 24 + Math.random() * 6, 36 + Math.random() * 6, 260];
+  const arcs = rays.map(() => rings.map(() => Array.from({ length: 5 }, () => (Math.random() - .5) * 5)));
+  const arc = (i, j, R, jag) => { // a jagged line at radius R from ray i to the next ray
+    const p = cross(rays[i], R).pt, q = cross(rays[(i + 1) % rays.length], R).pt;
+    const aA = angAt(p), d = angAt(q) - aA, aB = aA + Math.atan2(Math.sin(d), Math.cos(d)); // neighbours: the short way round
+    const out = [];
+    for (let k = 1; k <= 5; k++) { const t = aA + (aB - aA) * k / 6, rr = R + (jag ? arcs[i][j][k - 1] : 0); out.push([c.ox + Math.cos(t) * rr, c.oy + Math.sin(t) * rr]); }
+    return out;
+  };
+  const polys = [];
+  rays.forEach((_, i) => {
+    for (let j = 0; j < rings.length - 1; j++) {
+      const R0 = rings[j], R1 = rings[j + 1], last = j === rings.length - 2;
+      const A = span(rays[i], R0, R1), B = span(rays[(i + 1) % rays.length], R0, R1);
+      const outer = arc(i, j + 1, R1, !last), inner = R0 > 0 ? arc(i, j, R0, true).reverse() : [];
+      polys.push(A.concat(outer, B.slice().reverse(), inner));
+    }
   });
   const inside = (pt, poly) => {
     let inn = false;
@@ -2517,40 +2551,52 @@ function breakKing(c, col) {
   };
   const groups = polys.map(() => []);
   for (const pt of mask) {
-    let k = polys.findIndex((poly) => inside(pt, poly));
-    if (k < 0) { // a pixel right on a crack: give it to the wedge whose angle it falls in
-      const a = Math.atan2(pt[1] - c.oy, pt[0] - c.ox);
-      k = 0; let best = 9;
-      mains.forEach((m, i) => { const d = Math.abs(Math.atan2(Math.sin(a - m.ang - .3), Math.cos(a - m.ang - .3))); if (d < best) { best = d; k = i; } });
+    let k = -1;
+    for (const [ex, ey] of [[0, 0], [.6, 0], [-.6, 0], [0, .6], [0, -.6], [1.2, 1.2], [-1.2, -1.2]]) {
+      k = polys.findIndex((poly) => inside([pt[0] + ex, pt[1] + ey], poly)); if (k >= 0) break;
     }
-    groups[k].push(pt);
+    if (k >= 0) groups[k].push(pt);
   }
-  const floor = Math.max(...mask.map((p) => p[1]));
-  const height = new Array(100).fill(floor + .5); // highest occupied y in each column
-  const shards = groups.map((pts, i) => ({ pts, poly: polys[i] })).filter((s) => s.pts.length > 12);
+  const floor = Math.floor(Math.max(...mask.map((p) => p[1]))); // the row the king stands on
+  const W = 130, OFF = 15, solid = new Uint8Array(W * 101); // a little wider than the square: rubble spills over the edge // cells taken by pieces that have already come to rest
+  const shards = groups.map((pts, i) => ({ pts, poly: polys[i] })).filter((s) => s.pts.length > 3);
   shards.forEach((s) => {
     s.cx = s.pts.reduce((t, p) => t + p[0], 0) / s.pts.length;
     s.cy = s.pts.reduce((t, p) => t + p[1], 0) / s.pts.length;
     s.bottom = Math.max(...s.pts.map((p) => p[1]));
   });
   shards.sort((a, z) => z.bottom - a.bottom);
-  for (const s of shards) {
-    // Every piece tips away from the break point; the tall ones that stood on the floor topple onto their side.
-    const resting = s.bottom >= floor - 1.5;
-    const side = Math.sign(s.cx - c.ox) || (Math.random() < .5 ? -1 : 1);
-    const tall = (s.bottom - Math.min(...s.pts.map((p) => p[1]))) / Math.max(8, Math.max(...s.pts.map((p) => p[0])) - Math.min(...s.pts.map((p) => p[0])));
-    s.r = side * (resting ? Math.min(80, 20 + tall * 30 + Math.random() * 15) : 20 + Math.random() * 45);
-    s.dx = side * (resting ? 3 + Math.random() * 6 : 2 + Math.random() * 6);
-    const rad = s.r * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
-    const placed = s.pts.map(([x, y]) => [s.cx + (x - s.cx) * cs - (y - s.cy) * sn + s.dx, s.cy + (x - s.cx) * sn + (y - s.cy) * cs]);
-    const low = {};
-    for (const [x, y] of placed) { const k = Math.max(0, Math.min(99, Math.floor(x))); if (!(k in low) || y > low[k]) low[k] = y; }
+  // Seen from the front: each piece, lowest first, may tip and slide a little and then drops straight down until it
+  // meets the floor or a piece already lying there. Of the poses it could take it keeps the one that lies lowest.
+  const place = (s, r, dx) => {
+    const rad = r * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+    const cells = [], low = {};
+    for (const [x, y] of s.pts) {
+      const X = Math.floor(s.cx + (x - s.cx) * cs - (y - s.cy) * sn + dx), Y = Math.floor(s.cy + (x - s.cx) * sn + (y - s.cy) * cs);
+      if (X < -8 || X > 107 || Y > floor) return null;
+      cells.push([X, Y]);
+      if (!(X in low) || Y > low[X]) low[X] = Y;
+    }
     let dy = Infinity;
-    for (const k in low) dy = Math.min(dy, height[k] - .5 - low[k]);
-    s.dy = dy; // may be negative for a toppled piece: it lies lower but wider, resting on the floor
-
-    for (const [x, y] of placed) { const k = Math.max(0, Math.min(99, Math.floor(x))); height[k] = Math.min(height[k], y + s.dy - .5); }
-    s.delay = Math.random() * .12 + (resting ? .05 : 0);
+    for (const X in low) {
+      let y = Math.max(-1, low[X]) + 1;
+      while (y <= floor && !solid[y * W + +X + OFF]) y++;
+      dy = Math.min(dy, y - 1 - low[X]);
+    }
+    if (dy < 0) return null;
+    let cy = 0; for (const c2 of cells) cy += c2[1]; cy = cy / cells.length + dy;
+    return { cells, dy, r, dx, cost: -cy + Math.abs(dx) * .04 + Math.abs(r) * .005 };
+  };
+  for (const s of shards) {
+    let best = null;
+    for (let r = -90; r <= 90; r += 15) for (let d = -33; d <= 33; d += 3) {
+      const q = place(s, r + (Math.random() - .5) * 8, d);
+      if (q && (!best || q.cost < best.cost)) best = q;
+    }
+    if (!best) best = place(s, 0, 0) || { cells: [], dy: 0, r: 0, dx: 0 };
+    s.r = best.r; s.dx = best.dx; s.dy = best.dy;
+    for (const [X, Y] of best.cells) { const y = Y + best.dy; if (y >= 0 && y <= floor) solid[y * W + X + OFF] = 1; }
+    s.delay = Math.random() * .1 + (s.bottom >= floor - 1.5 ? .06 : 0);
     s.dur = .28 + .1 * Math.sqrt(Math.max(1, s.dy));
   }
   return shards;
