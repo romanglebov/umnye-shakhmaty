@@ -2342,13 +2342,17 @@ class MiniEngine {
 }
 let engine = new Stockfish();
 let usingMini = false;
+// Every call refreshes the eval bar when its position is the one on the board,
+// including cached positions (after undo the earlier position is already cached).
 function analyze(fen) {
   if (!cache.has(fen)) {
-    const p = engine.search(fen, ANALYSIS).then((r) => { if (fen === game.fen()) setEval(r.score); return r; });
+    const p = engine.search(fen, ANALYSIS);
     p.catch(() => cache.delete(fen));
     cache.set(fen, p);
   }
-  return cache.get(fen);
+  const p = cache.get(fen);
+  p.then((r) => { if (fen === game.fen() && !game.game_over()) setEval(r.score); }, () => {});
+  return p;
 }
 function terminalEval() {
   const cp = game.in_checkmate() ? (game.turn() === "w" ? -10000 : 10000) : 0;
