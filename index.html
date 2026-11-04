@@ -315,6 +315,10 @@ body.in-lesson .actions, body.in-lesson #onlinePanel, body.in-lesson .panel.coac
         <div class="seg" id="atkSeg"><button type="button" data-v="off" aria-pressed="true">Нет</button><button type="button" data-v="me" aria-pressed="false">Мои</button><button type="button" data-v="op" aria-pressed="false">Чужие</button><button type="button" data-v="both" aria-pressed="false">Все</button></div>
         <span class="atk-legend"><span><i style="background: var(--atk-me); border-radius: 50%"></i>бью я (справа сверху)</span><span><i style="background: var(--atk-op); border-radius: 50%"></i>бьёт соперник (слева снизу)</span></span>
       </div>
+      <div class="row"><span class="lbl">Фигуры в тексте</span>
+        <div class="seg" id="iconsSeg"><button type="button" data-v="on" aria-pressed="true">Иконки</button><button type="button" data-v="off" aria-pressed="false">Словами</button></div>
+        <span class="note-small">как наставник называет фигуры в уроке</span>
+      </div>
       <div class="row"><span class="lbl">Названия клеток</span>
         <div class="seg" id="namesSeg"><button type="button" data-v="on" aria-pressed="true">Вкл</button><button type="button" data-v="off" aria-pressed="false">Выкл</button></div>
       </div>
@@ -2230,7 +2234,7 @@ function seeMap() {
   return map;
 }
 let showShields = true, showSee = true, showPotential = true, heatMode = "off";
-let attackView = "off", showBest = false, crack = null, showNames = true;
+let attackView = "off", showBest = false, crack = null, showNames = true, pieceIcons = true;
 let flipped = false, selected = null, targets = new Set(), lastMove = null, arrow = null, drag = null;
 let busy = true, gen = 0, engineReady = false;
 let lesson = null;             // lesson run state (Scholar's mate drills); null in a normal game
@@ -2900,7 +2904,7 @@ function renderMoves() {
   ol.scrollTop = ol.scrollHeight;
 }
 function save() {
-  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode, showNames };
+  const prefs = { v: 2, level, mode, soundOn, attackView, showBest, showShields, showSee, showPotential, heatMode, showNames, pieceIcons };
   if (lesson) {
     // The lesson board is never saved; the game left behind stays as it was.
     try { const s = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; localStorage.setItem(KEY, JSON.stringify({ ...s, ...prefs })); } catch (_) {}
@@ -3384,6 +3388,7 @@ function initControls() {
   segInit("#shieldSeg", showShields ? "on" : "off", (v) => { showShields = v === "on"; render(); save(); });
   segInit("#seeSeg", showSee ? "on" : "off", (v) => { showSee = v === "on"; render(); save(); });
   segInit("#potSeg", showPotential ? "on" : "off", (v) => { showPotential = v === "on"; render(); save(); });
+  segInit("#iconsSeg", pieceIcons ? "on" : "off", (v) => { pieceIcons = v === "on"; applyPieceIcons(); save(); });
   segInit("#namesSeg", showNames ? "on" : "off", (v) => { showNames = v === "on"; render(); save(); });
   segInit("#heatSeg", heatMode, (v) => { heatMode = v; render(); save(); });
   segInit("#bestSeg", showBest ? "on" : "off", (v) => { showBest = v === "on"; if (!showBest) { arrow = null; render(); } else maybeShowBest(); save(); });
@@ -4356,11 +4361,20 @@ function pieceWordColor(type, sq, before, hint, word, mark) {
 }
 function lessonRich(el, text, color) {
   setRich(el, text, color);
-  el.innerHTML = el.innerHTML.replace(PIECE_WORD_RE, (m, word, mark, tail, off, all) => {
+  const plain = el.innerHTML.replace(/\^(?:me|op)/g, "");
+  el._plain = plain;
+  el._icons = el.innerHTML.replace(PIECE_WORD_RE, (m, word, mark, tail, off, all) => {
     const type = WORD_TYPE[word.slice(0, 3).toLowerCase()];
     const sq = (tail.match(/[a-h][1-8]/) || [])[0];
     const c = pieceWordColor(type, sq, all.slice(0, off).replace(/<[^>]*>/g, ""), color, word, mark);
     return `<span class="mi p-${c}${type}" role="img" aria-label="${word}" title="${word}"></span>${tail}`;
+  });
+  el.innerHTML = pieceIcons ? el._icons : el._plain;
+}
+// Settings toggle: swap every mentor message (and the title) between words and icons in place.
+function applyPieceIcons() {
+  document.querySelectorAll("#lessonPanel .ls-msg, #lessonPanel .ls-t, #lsTitle").forEach((el) => {
+    if (el._icons != null) el.innerHTML = pieceIcons ? el._icons : el._plain;
   });
 }
 // Variation titles: move codes are the opponent's unless `tc` lists each one's colour.
@@ -4368,7 +4382,9 @@ function lessonTitle(el, v, extra) {
   const opp = v.side === "w" ? "b" : "w", cols = v.tc || "";
   let k = 0;
   lessonRich(el, v.title + (extra || ""), opp);
-  el.innerHTML = el.innerHTML.replace(/p-([wb])([kqrbnp])(?=" role="img" aria-label="(?:Кр|Ф|Л|С|К)")/g, (m, c, t) => `p-${cols[k++] || opp}${t}`);
+  const fix = (h) => { k = 0; return h.replace(/p-([wb])([kqrbnp])(?=" role="img" aria-label="(?:Кр|Ф|Л|С|К)")/g, (m, c, t) => `p-${cols[k++] || opp}${t}`); };
+  el._icons = fix(el._icons); el._plain = fix(el._plain);
+  el.innerHTML = pieceIcons ? el._icons : el._plain;
 }
 function lessonSay(text, cls, color) {
   const box = $("#lsLog");
@@ -4712,6 +4728,7 @@ function restore() {
   if (typeof s.showSee === "boolean") showSee = s.showSee;
   if (typeof s.showPotential === "boolean") showPotential = s.showPotential;
   if (typeof s.showNames === "boolean") showNames = s.showNames;
+  if (typeof s.pieceIcons === "boolean") pieceIcons = s.pieceIcons;
   // prefs v2: the field map starts switched off, also for saves made before that default.
   if (s.v >= 2 && ["sum", "table", "off"].includes(s.heatMode)) heatMode = s.heatMode;
   if (s.playerColor === "w" || s.playerColor === "b") playerColor = pendingColor = s.playerColor;
