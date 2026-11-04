@@ -3314,7 +3314,7 @@ function undoCount() {
   return Math.min(n, len - minLen);
 }
 function undo() {
-  if (lesson) return;
+  if (lesson) return lessonUndo();
   if (online) return askTakeback();
   const n = undoCount();
   if (n <= 0 || !engineReady) return;
@@ -4404,7 +4404,7 @@ function lessonButtons(list) {
 function lessonPlayTools() {
   const tools = [];
   if (!lesson.exam) tools.push(["Подсказка", "", lessonHint, "lsHint"]);
-  tools.push(["Начать вариант заново", "", () => lessonStart(lesson.v, true)], ["К списку вариантов", "", lessonMenu]);
+  tools.push(["↶ Ход назад", "", lessonUndo, "lsUndo"], ["Начать вариант заново", "", () => lessonStart(lesson.v, true)], ["К списку вариантов", "", lessonMenu]);
   lessonButtons(tools);
   const h = $("#lsHint"); if (h) h.disabled = !lesson.await;
 }
@@ -4498,7 +4498,7 @@ async function lessonStart(v, examStart) {
   if (!examStart) lesson.exam = false;
   const t = ++lesson.token;
   if (lesson.preDone) lesson.preDone();
-  Object.assign(lesson, { v, node: null, preWant: null, preDone: null, await: false, retry: false, dirty: false, hints: 0, tries: 0, arrows: [], marks: [] });
+  Object.assign(lesson, { v, node: null, preWant: null, preDone: null, await: false, retry: false, passed: false, stack: [], dirty: false, hints: 0, tries: 0, arrows: [], marks: [] });
   // Level 0: the mentor says what to do and draws it; 1: hints in words, no arrows; 2 (and the exam): on your own.
   lesson.level = lesson.exam ? 2 : Math.min(2, lessonDone(v.id));
   lesson.guided = lesson.level === 0;
@@ -4515,7 +4515,13 @@ async function lessonStart(v, examStart) {
   if (lesson.exam) lessonSay(`Экзамен. ${side} Дебют разыгрываешь сам, а потом не дай поставить мат.`);
   else lessonSay(side + [" Сначала я буду объяснять каждый ход и показывать стрелками, что делать.", " В этот раз подсказываю только словами, без стрелок.", " Теперь всё сам: и дебют, и защиту. Подсказка — только по кнопке, но тогда повтор не засчитается."][lesson.level]);
   await lsSleep(400);
-  for (const [san, say] of v.pre) {
+  if (lsAlive(t)) lessonRunPre(t);
+}
+// Plays the opening from wherever the board is now: the opponent's moves by itself, the student's by hand.
+async function lessonRunPre(t) {
+  const v = lesson.v;
+  lesson.stack = [];
+  for (const [san, say] of v.pre.slice(game.history().length)) {
     if (!lsAlive(t)) return;
     if (game.turn() === playerColor) {
       // The student's own opening moves, played by hand: told and drawn, then only told, then not at all.
@@ -4555,6 +4561,7 @@ async function lessonMentor(node, t) {
   if (lesson.level === 0 && sn.do) { lessonSay(sn.do + " Зелёная стрелка показывает этот ход.", "hint", playerColor); lesson.shown.add("do"); }
   if (lesson.level === 1 && sn.hint) { lessonSay("Подсказка: " + sn.hint, "hint", playerColor); lesson.shown.add("hint"); }
   lesson.node = sn; lesson.ply = game.history().length; lesson.tries = 0;
+  lesson.stack.push({ node: sn, ply: lesson.ply, arrows: lesson.arrows, marks: lesson.marks });
   lesson.await = true;
   lessonPlayTools();
   refreshStatus();
@@ -4579,6 +4586,36 @@ function lessonHint() {
   lesson.arrows = [{ from: m.from, to: m.to, tone: "h" }];
   lessonSay(`Стрелка на доске показывает ход ${ru(m.san)}.`, "hint", m.color);
   render();
+}
+// Ctrl+Z / «Ход назад»: back to the student's previous decision (a defence move or an opening move).
+function lessonUndo() {
+  if (!lesson || !lesson.v || lesson.passed) return;
+  if (lesson.retry) return lessonRetry(lesson.token);
+  if (!lesson.await) return; // the mentor is moving
+  let prev = null;
+  if (!lesson.preWant && lesson.node) { lesson.stack.pop(); prev = lesson.stack[lesson.stack.length - 1] || null; }
+  const t = ++lesson.token;
+  if (lesson.preDone) lesson.preDone = null;
+  lesson.preWant = null; lesson.retry = false; selected = null; targets = new Set();
+  if (prev) {
+    while (game.history().length > prev.ply) game.undo();
+    Object.assign(lesson, { node: prev.node, ply: prev.ply, tries: 0, arrows: prev.arrows, marks: prev.marks, mentorArrows: prev.arrows, await: true });
+    lesson.shown = new Set();
+  } else {
+    // Back into the opening: to the student's last opening move before where the board is now.
+    const me = lesson.v.side === "w" ? 0 : 1, len = Math.min(game.history().length, lesson.v.pre.length);
+    let idx = -1;
+    for (let i = len - 1; i >= 0; i--) if (i % 2 === me) { idx = i; break; }
+    if (idx < 0) return;
+    while (game.history().length > idx) game.undo();
+    Object.assign(lesson, { node: null, arrows: [], marks: [], await: false, stack: [] });
+  }
+  const h = game.history({ verbose: true }), last = h[h.length - 1];
+  lastMove = last ? { from: last.from, to: last.to } : null; crack = null;
+  lessonSay("Ход отменён.", "alt");
+  lessonPlayTools(); render(); renderMoves(); refreshStatus();
+  if (engineReady) analyze(game.fen()).catch(() => {});
+  if (!prev) lessonRunPre(t);
 }
 function mateInOne() {
   for (const m of game.moves({ verbose: true })) { game.move(m); const x = game.in_checkmate(); game.undo(); if (x) return m.san; }
@@ -4669,7 +4706,7 @@ async function lessonMove(from, to, promotion, anim) {
 }
 function lessonPassed(t) {
   const v = lesson.v;
-  lesson.await = false; lesson.node = null; lesson.arrows = []; lesson.marks = [];
+  lesson.await = false; lesson.node = null; lesson.arrows = []; lesson.marks = []; lesson.passed = true;
   setTimeout(() => { if (lsAlive(t)) render(); }, 320); // after the last move has slid into place
   refreshStatus();
   const clean = !lesson.dirty;
