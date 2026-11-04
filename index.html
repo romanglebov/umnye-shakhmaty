@@ -4339,7 +4339,7 @@ function lessonHeader() {
   $("#lsSub").hidden = !sub;
 }
 function lessonMenu() {
-  lesson.token++; lesson.v = null; lesson.node = null; lesson.await = false; lesson.retry = false; lesson.arrows = []; lesson.marks = [];
+  lesson.token++; lesson.v = null; lesson.node = null; lesson.await = false; lesson.retry = false; lesson.preWant = null; lesson.preDone = null; lesson.arrows = []; lesson.marks = [];
   lesson.exam = false;
   lessonHeader();
   $("#lsLog").innerHTML = "";
@@ -4418,7 +4418,8 @@ async function lessonStart(v, examStart) {
   if (!lesson) return;
   if (!examStart) lesson.exam = false;
   const t = ++lesson.token;
-  Object.assign(lesson, { v, node: null, await: false, retry: false, dirty: false, hints: 0, tries: 0, arrows: [], marks: [] });
+  if (lesson.preDone) lesson.preDone();
+  Object.assign(lesson, { v, node: null, preWant: null, preDone: null, await: false, retry: false, dirty: false, hints: 0, tries: 0, arrows: [], marks: [] });
   lesson.guided = !lesson.exam && lessonDone(v.id) === 0;
   $("#lsList").hidden = true;
   $("#lsLog").innerHTML = "";
@@ -4429,14 +4430,24 @@ async function lessonStart(v, examStart) {
   render(); renderMoves(); refreshStatus();
   lessonPlayTools();
   if (lesson.exam) lessonSay(`Экзамен. ${v.side === "w" ? "Ты играешь белыми." : "Ты играешь чёрными."} Не дай поставить мат.`);
-  else lessonSay(lesson.guided ? v.intro : `${v.side === "w" ? "Ты играешь белыми." : "Ты играешь чёрными."} Вспомни, как защищаться, — теперь без стрелок.`);
-  await lsSleep(lesson.guided ? 900 : 400);
+  else lessonSay(`${v.side === "w" ? "Ты играешь белыми." : "Ты играешь чёрными."} Разыграем дебют: свои ходы делай сам, по зелёным стрелкам.${lesson.guided ? "" : " Дальше вспомни, как защищаться, — теперь без подсказок-стрелок."}`);
+  await lsSleep(400);
   for (const san of v.pre) {
     if (!lsAlive(t)) return;
-    lessonPlay(san);
+    if (game.turn() === playerColor) {
+      // The student's own opening moves: shown by an arrow, played by hand.
+      const m = game.move(san); game.undo();
+      lesson.preWant = san; lesson.await = true;
+      lesson.arrows = [{ from: m.from, to: m.to, tone: "h" }];
+      render(); refreshStatus();
+      await new Promise((res) => { lesson.preDone = res; });
+      if (!lsAlive(t)) return;
+      lesson.arrows = []; render();
+    } else lessonPlay(san);
     await lsSleep(420);
   }
   if (!lsAlive(t)) return;
+  if (lesson.guided) { lessonSay(v.intro); await lsSleep(700); if (!lsAlive(t)) return; }
   lessonMentor(v.next, t);
 }
 async function lessonMentor(node, t) {
@@ -4497,6 +4508,19 @@ async function lessonMove(from, to, promotion, anim) {
   const t = lesson.token, node = lesson.node, fenBefore = game.fen();
   const mv = game.move({ from, to, promotion });
   if (!mv) return deselect();
+  if (lesson.preWant) {
+    selected = null; targets = new Set();
+    if (mv.san !== lesson.preWant) {
+      game.undo(); render();
+      lessonSay(`В этом варианте дебют такой: сыграй ${ru(lesson.preWant)} — по зелёной стрелке.`, "hint", mv.color);
+      return;
+    }
+    lastMove = { from, to }; lesson.await = false;
+    const done = lesson.preDone; lesson.preWant = null; lesson.preDone = null;
+    render(); if (anim) animateMove(mv); playSound(mv); renderMoves(); refreshStatus();
+    if (engineReady) analyze(game.fen()).catch(() => {});
+    return done && done();
+  }
   selected = null; targets = new Set(); lastMove = { from, to };
   lesson.arrows = []; lesson.await = false;
   const h = $("#lsHint"); if (h) h.disabled = true;
@@ -4578,6 +4602,7 @@ function lessonStatus() {
   if (!lesson.v) return setStatus("Урок: выберите вариант");
   if (game.in_checkmate()) { setStatus("Мат. Попробуйте ещё раз."); el.classList.add("end"); return; }
   if (lesson.retry) return setStatus("Ошибка. Нажмите «Попробовать ещё раз»");
+  if (lesson.preWant) return setStatus(`Ваш ход: ${ru(lesson.preWant)} (по стрелке)`);
   if (lesson.await) return setStatus(`Ваш ход (${lesson.v.side === "w" ? "белые" : "чёрные"})${game.in_check() ? ". Шах!" : ""}`);
   if (lesson.node === null && !lesson.await && game.history().length > lesson.v.pre.length) return setStatus("Вариант пройден");
   setStatus("Наставник ходит", true);
