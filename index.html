@@ -4442,7 +4442,6 @@ async function lessonStart(v, examStart) {
       render(); refreshStatus();
       await new Promise((res) => { lesson.preDone = res; });
       if (!lsAlive(t)) return;
-      lesson.arrows = []; render();
     } else lessonPlay(san);
     await lsSleep(420);
   }
@@ -4454,17 +4453,18 @@ async function lessonMentor(node, t) {
   lesson.await = false; refreshStatus();
   await lsSleep(500);
   if (!lsAlive(t)) return;
-  const mv = lessonPlay(node.san);
-  if (!mv) return;
+  // Arrows go in before the move so the move's own render draws them: a second render would cut the slide short.
   const show = lesson.guided;
   lesson.arrows = show ? (node.arrows || []).map(([from, to, tone]) => ({ from, to, tone })) : [];
   lesson.marks = show ? node.marks || [] : [];
   lesson.mentorArrows = lesson.arrows;
+  const mv = lessonPlay(node.san);
+  if (!mv) return;
   lessonSay(show ? node.say : (node.short || `${ru(mv.san)}. Твой ход.`), "", mv.color);
   lesson.node = node.next; lesson.ply = game.history().length; lesson.tries = 0;
   lesson.await = true;
   lessonPlayTools();
-  render(); refreshStatus();
+  refreshStatus();
 }
 function lessonHint() {
   if (!lesson || !lesson.await || !lesson.node) return;
@@ -4515,7 +4515,7 @@ async function lessonMove(from, to, promotion, anim) {
       lessonSay(`В этом варианте дебют такой: сыграй ${ru(lesson.preWant)} — по зелёной стрелке.`, "hint", mv.color);
       return;
     }
-    lastMove = { from, to }; lesson.await = false;
+    lastMove = { from, to }; lesson.await = false; lesson.arrows = [];
     const done = lesson.preDone; lesson.preWant = null; lesson.preDone = null;
     render(); if (anim) animateMove(mv); playSound(mv); renderMoves(); refreshStatus();
     if (engineReady) analyze(game.fen()).catch(() => {});
@@ -4565,7 +4565,8 @@ async function lessonMove(from, to, promotion, anim) {
 function lessonPassed(t) {
   const v = lesson.v;
   lesson.await = false; lesson.node = null; lesson.arrows = []; lesson.marks = [];
-  render(); refreshStatus();
+  setTimeout(() => { if (lsAlive(t)) render(); }, 320); // after the last move has slid into place
+  refreshStatus();
   const clean = !lesson.dirty;
   let note;
   if (lesson.exam) {
