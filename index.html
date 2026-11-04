@@ -3333,7 +3333,9 @@ $("#undoBtn").addEventListener("click", undo);
 $("#lessonBtn").addEventListener("click", lessonEnter);
 document.addEventListener("keydown", (e) => {
   if (e.target.closest && e.target.closest("input")) return;
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
+  // By key position, so Ctrl+Z also works on the Russian layout (where the key gives "я").
+  const z = e.code === "KeyZ" || ["z", "я"].includes((e.key || "").toLowerCase());
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && z) { e.preventDefault(); undo(); }
 });
 $("#flipBtn").addEventListener("click", () => { flipped = !flipped; render(); save(); });
 $("#swapBtn").addEventListener("click", swapClick);
