@@ -121,9 +121,10 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-
 .sq.lifting .pc { opacity: .25; }
 .sq.lifting .shield, .sq.lifting .hang, .sq.lifting .pot { display: none; }
 /* Attack / defence counters: red sword top-left, green shield top-right. */
-.ad { position: absolute; top: 3%; z-index: 5; pointer-events: none; display: inline-flex; align-items: center; gap: .25cqw; height: 3.3cqw; min-height: 14px; padding: 0 .7cqw 0 .45cqw; border-radius: 99px; background: rgba(28, 26, 24, .78); box-shadow: 0 1px 2px rgba(0,0,0,.35); font: 800 max(10px, 2.3cqw)/1 var(--f-ui); color: #fff; font-variant-numeric: tabular-nums; }
+.ad { position: absolute; top: 3%; z-index: 5; pointer-events: none; display: inline-flex; align-items: center; gap: .25cqw; height: 3.3cqw; min-height: 14px; padding: 0; font: 800 max(11px, 2.5cqw)/1 var(--f-ui); color: #fff; -webkit-text-stroke: 3px #1c1a18; paint-order: stroke fill; filter: drop-shadow(0 1px 1px rgba(0,0,0,.35)); font-variant-numeric: tabular-nums; }
 .ad svg { width: 2.7cqw; height: 2.7cqw; min-width: 12px; min-height: 12px; flex: none; }
-.ad.sw { left: 3%; } .ad.df { right: 3%; }
+.ad.sw { left: 4%; } .ad.df { right: 4%; }
+.coord.r ~ .ad.sw { left: 16%; } /* clear the rank number on the edge file */
 .ad.zero { opacity: .55; }
 .board.ad-hover .ad { display: none; }
 .board.ad-hover .sq.sel .ad, .board.ad-hover .sq:focus-visible .ad { display: inline-flex; }
